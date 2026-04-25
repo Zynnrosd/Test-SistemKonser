@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router";
+import { useParams, Link } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowLeft, CreditCard, CheckCircle2, User, MapPin,
@@ -37,7 +37,6 @@ export function PaymentConfirmPage() {
   const { ticketId } = useParams<{ ticketId: string }>();
   const { getTicket, getConcert, payTicket } = useData();
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
