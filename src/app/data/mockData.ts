@@ -1,6 +1,14 @@
 export type UserRole = "user" | "admin";
 export type ConcertStatus = "active" | "archived";
-export type TicketStatus = "booked" | "cancelled" | "attended";
+export type TicketStatus = "pending" | "booked" | "cancelled" | "attended";
+export type SeatCategory = "Regular" | "VIP" | "VVIP";
+export type PaymentMethod =
+  | "Credit Card"
+  | "Debit Card"
+  | "GoPay"
+  | "OVO"
+  | "Dana"
+  | "Bank Transfer";
 
 export interface User {
   id: string;
@@ -9,6 +17,8 @@ export interface User {
   password: string;
   role: UserRole;
   createdAt: string;
+  phone?: string;
+  address?: string;
 }
 
 export interface Concert {
@@ -36,7 +46,10 @@ export interface Ticket {
   quantity: number;
   totalPrice: number;
   bookingDate: string;
+  bookingTimestamp: string;
   status: TicketStatus;
+  seatCategory: SeatCategory;
+  paymentMethod: PaymentMethod;
 }
 
 export const USERS: User[] = [
@@ -90,7 +103,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1610900538035-b04c4d957d9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "Experience the electrifying Neon Horizons Tour — a night of dreamy synthwave and pulsating beats that blur the line between retro nostalgia and modern electronic soundscapes. The Midnight deliver an unforgettable visual and sonic spectacle.",
+      "Experience the electrifying Neon Horizons Tour — a night of dreamy synthwave and pulsating beats that blur the line between retro nostalgia and modern electronic soundscapes.",
     status: "active",
     createdAt: "2025-01-10",
   },
@@ -109,7 +122,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1600201508641-23fbbc36e8e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "Imagine Dragons bring their explosive energy back to the stage with the Thunder & Lightning World Tour. Expect anthemic hits, massive pyrotechnics, and a raw emotional journey through their legendary catalog.",
+      "Imagine Dragons bring their explosive energy back to the stage. Expect anthemic hits, massive pyrotechnics, and a raw emotional journey through their legendary catalog.",
     status: "active",
     createdAt: "2025-01-15",
   },
@@ -128,7 +141,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1677845100776-0aad8a8173a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "An intimate evening of transcendent jazz with saxophonist Kamasi Washington. Blue Note Sessions offers an up-close experience of cosmic jazz improvisation that pushes the boundaries of the genre.",
+      "An intimate evening of transcendent jazz with saxophonist Kamasi Washington. Blue Note Sessions offers cosmic jazz improvisation that pushes the boundaries of the genre.",
     status: "active",
     createdAt: "2025-02-01",
   },
@@ -147,7 +160,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1519683000900-034603c717b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "The world-renowned Berlin Philharmonic performs a breathtaking program featuring Beethoven's 9th Symphony and Brahms' Piano Concerto No. 2. A refined evening of unparalleled musical mastery.",
+      "The world-renowned Berlin Philharmonic performs Beethoven's 9th Symphony and Brahms' Piano Concerto No. 2. An evening of unparalleled musical mastery.",
     status: "active",
     createdAt: "2025-02-20",
   },
@@ -166,7 +179,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1616709062048-788acece6a51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "The ultimate electronic music festival experience. Ultrawave brings together world-class DJs and producers for an all-night dance odyssey under the desert sky.",
+      "The ultimate electronic music festival. Ultrawave brings together world-class DJs for an all-night dance odyssey under the desert sky.",
     status: "active",
     createdAt: "2025-03-01",
   },
@@ -185,7 +198,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1517231155085-247ebcab650f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "Aurora Bell's Eras Reimagined tour takes audiences through a stunning retrospective of her decade-long career with brand new arrangements, stunning visuals, and surprise guest appearances.",
+      "Aurora Bell's Eras Reimagined tour — a stunning retrospective with brand new arrangements, visuals, and surprise guest appearances.",
     status: "active",
     createdAt: "2025-03-15",
   },
@@ -204,7 +217,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1770155623767-8051b483f01c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "An enchanting evening of acoustic folk harmonies set against the stunning backdrop of Red Rocks. Fleet Foxes perform new and classic songs in this limited-capacity intimate show.",
+      "An enchanting evening of acoustic folk harmonies at Red Rocks. Fleet Foxes perform new and classic songs in this limited-capacity show.",
     status: "archived",
     createdAt: "2024-12-01",
   },
@@ -223,7 +236,7 @@ export const CONCERTS: Concert[] = [
     image:
       "https://images.unsplash.com/photo-1582711012124-a56cf82307a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800",
     description:
-      "A day-long celebration of music across three stages. Summer Solstice features 20+ artists spanning genres from hip-hop and R&B to indie and electronic music. Food, art installations, and community.",
+      "A day-long celebration of music across three stages. 20+ artists spanning hip-hop, R&B, indie, and electronic music.",
     status: "archived",
     createdAt: "2024-11-15",
   },
@@ -237,7 +250,10 @@ export const TICKETS: Ticket[] = [
     quantity: 2,
     totalPrice: 179.98,
     bookingDate: "2025-06-01",
+    bookingTimestamp: "2025-06-01T10:00:00.000Z",
     status: "booked",
+    seatCategory: "VIP",
+    paymentMethod: "Credit Card",
   },
   {
     id: "t2",
@@ -246,7 +262,10 @@ export const TICKETS: Ticket[] = [
     quantity: 1,
     totalPrice: 65.0,
     bookingDate: "2025-06-10",
+    bookingTimestamp: "2025-06-10T14:30:00.000Z",
     status: "booked",
+    seatCategory: "Regular",
+    paymentMethod: "GoPay",
   },
   {
     id: "t3",
@@ -255,7 +274,10 @@ export const TICKETS: Ticket[] = [
     quantity: 3,
     totalPrice: 360.0,
     bookingDate: "2025-05-20",
+    bookingTimestamp: "2025-05-20T09:00:00.000Z",
     status: "booked",
+    seatCategory: "Regular",
+    paymentMethod: "Bank Transfer",
   },
   {
     id: "t4",
@@ -264,7 +286,10 @@ export const TICKETS: Ticket[] = [
     quantity: 2,
     totalPrice: 350.0,
     bookingDate: "2025-05-25",
+    bookingTimestamp: "2025-05-25T11:00:00.000Z",
     status: "booked",
+    seatCategory: "VVIP",
+    paymentMethod: "Debit Card",
   },
   {
     id: "t5",
@@ -273,7 +298,10 @@ export const TICKETS: Ticket[] = [
     quantity: 4,
     totalPrice: 1196.0,
     bookingDate: "2025-06-05",
+    bookingTimestamp: "2025-06-05T16:00:00.000Z",
     status: "booked",
+    seatCategory: "VIP",
+    paymentMethod: "OVO",
   },
   {
     id: "t6",
@@ -282,7 +310,10 @@ export const TICKETS: Ticket[] = [
     quantity: 2,
     totalPrice: 150.0,
     bookingDate: "2025-04-15",
+    bookingTimestamp: "2025-04-15T08:00:00.000Z",
     status: "attended",
+    seatCategory: "Regular",
+    paymentMethod: "Dana",
   },
   {
     id: "t7",
@@ -291,7 +322,10 @@ export const TICKETS: Ticket[] = [
     quantity: 1,
     totalPrice: 150.0,
     bookingDate: "2025-06-12",
+    bookingTimestamp: "2025-06-12T13:00:00.000Z",
     status: "booked",
+    seatCategory: "VIP",
+    paymentMethod: "Credit Card",
   },
   {
     id: "t8",
@@ -300,6 +334,9 @@ export const TICKETS: Ticket[] = [
     quantity: 2,
     totalPrice: 398.0,
     bookingDate: "2025-05-01",
+    bookingTimestamp: "2025-05-01T10:00:00.000Z",
     status: "cancelled",
+    seatCategory: "Regular",
+    paymentMethod: "GoPay",
   },
 ];

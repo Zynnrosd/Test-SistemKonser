@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router";
-import { motion } from "motion/react";
-import { Music2, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Music2, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { PageTransition } from "../components/PageTransition";
 
 export function LoginPage() {
   const { login, currentUser } = useAuth();
@@ -12,91 +11,90 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 650));
     const result = login(email, password);
     setLoading(false);
-    if (result.success) {
-      // will re-render and navigate via redirect
-    } else {
-      setError(result.message);
-    }
+    if (!result.success) setError(result.message);
   };
 
-  // If already logged in, redirect
   if (currentUser) {
     return <Navigate to={currentUser.role === "admin" ? "/admin" : "/dashboard"} replace />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-violet-50/30 flex items-center justify-center p-4">
-      {/* Background decoration */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-violet-200/20 rounded-full blur-3xl" />
-      </div>
-
-      <PageTransition className="w-full max-w-md relative">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-200 mb-4"
-          >
-            <Music2 className="w-7 h-7 text-white" />
-          </motion.div>
-          <h1 className="text-gray-900 mb-1" style={{ fontWeight: 700, fontSize: "1.6rem" }}>
-            Welcome back
-          </h1>
-          <p className="text-gray-500 text-sm">Sign in to your ConcertHub account</p>
-        </div>
-
-        {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-gray-100/80 border border-gray-100 p-8">
-          {/* Demo credentials */}
-          <div className="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-            <p className="text-xs text-indigo-600 mb-2" style={{ fontWeight: 600 }}>
-              Demo Credentials
-            </p>
-            <div className="space-y-1 text-xs text-indigo-500">
-              <p>👤 User: <span className="font-mono">john@example.com</span> / <span className="font-mono">user123</span></p>
-              <p>🔧 Admin: <span className="font-mono">admin@concerts.com</span> / <span className="font-mono">admin123</span></p>
+    <div className="min-h-screen bg-[#f0eeff] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-[860px] bg-white rounded-3xl shadow-2xl shadow-indigo-200/40 overflow-hidden flex"
+        style={{ minHeight: "520px" }}
+      >
+        {/* ── Left: Form ── */}
+        <div className="flex-1 flex flex-col justify-center px-10 py-12">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2.5 mb-10 lg:hidden">
+            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center">
+              <Music2 className="w-4 h-4 text-white" />
             </div>
+            <span className="font-bold text-gray-900">ConcertHub</span>
+          </div>
+
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h1>
+            <p className="text-sm text-gray-400">Sign in to your account to continue</p>
+          </div>
+
+          {/* Demo hint */}
+          <div className="mb-6 px-4 py-3 bg-violet-50 rounded-2xl border border-violet-100">
+            <p className="text-xs text-violet-500 font-semibold mb-1">Demo credentials</p>
+            <p className="text-xs text-violet-400 font-mono">john@example.com · user123</p>
+            <p className="text-xs text-violet-400 font-mono">admin@concerts.com · admin123</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div>
-              <label className="block text-sm text-gray-700 mb-1.5" style={{ fontWeight: 500 }}>
-                Email address
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setFocused("email")}
+                onBlur={() => setFocused(null)}
                 placeholder="you@example.com"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 transition-all text-sm"
+                className={`w-full px-4 py-2.5 rounded-xl border bg-[#fafafa] text-gray-900 placeholder-gray-300 text-sm outline-none transition-all ${
+                  focused === "email"
+                    ? "border-indigo-400 ring-3 ring-indigo-100 bg-white"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
               />
             </div>
 
+            {/* Password */}
             <div>
-              <label className="block text-sm text-gray-700 mb-1.5" style={{ fontWeight: 500 }}>
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setFocused("password")}
+                  onBlur={() => setFocused(null)}
                   placeholder="Enter your password"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 transition-all text-sm pr-12"
+                  className={`w-full px-4 py-2.5 rounded-xl border bg-[#fafafa] text-gray-900 placeholder-gray-300 text-sm outline-none transition-all pr-11 ${
+                    focused === "password"
+                      ? "border-indigo-400 ring-3 ring-indigo-100 bg-white"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
                 />
                 <button
                   type="button"
@@ -108,24 +106,28 @@ export function LoginPage() {
               </div>
             </div>
 
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm"
-              >
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                {error}
-              </motion.div>
-            )}
+            {/* Error */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="flex items-center gap-2 px-3 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-500 text-sm"
+                >
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
+            {/* Submit */}
             <motion.button
               type="submit"
               disabled={loading}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-200 transition-all text-sm disabled:opacity-70"
-              style={{ fontWeight: 600 }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl text-white text-sm font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-indigo-200/60 transition-all disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -136,21 +138,70 @@ export function LoginPage() {
                   Signing in...
                 </span>
               ) : (
-                <>
-                  Sign In <ArrowRight className="w-4 h-4" />
-                </>
+                "Sign in"
               )}
             </motion.button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-gray-400 mt-6">
             Don't have an account?{" "}
-            <Link to="/register" className="text-indigo-600 hover:text-indigo-700 transition-colors" style={{ fontWeight: 500 }}>
+            <Link to="/register" className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors">
               Create one
             </Link>
           </p>
         </div>
-      </PageTransition>
+
+        {/* ── Right: Branding Panel ── */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="hidden lg:flex w-[42%] bg-gradient-to-br from-violet-600 via-indigo-600 to-indigo-700 flex-col justify-between p-10 relative overflow-hidden"
+        >
+          {/* Decorative circles */}
+          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/5" />
+          <div className="absolute top-1/3 -right-8 w-32 h-32 rounded-full bg-white/5" />
+          <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-black/10" />
+
+          {/* Logo */}
+          <div className="relative flex items-center gap-3">
+            <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <Music2 className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-white font-bold text-lg tracking-tight">ConcertHub</span>
+          </div>
+
+          {/* Main copy */}
+          <div className="relative">
+            <h2 className="text-white font-bold leading-tight mb-4" style={{ fontSize: "2rem" }}>
+              Your tickets,<br />one place.
+            </h2>
+            <p className="text-white/60 text-sm leading-relaxed">
+              Discover live concerts, book seats instantly, and manage all your bookings in one clean dashboard.
+            </p>
+          </div>
+
+          {/* Feature pills */}
+          <div className="relative space-y-2.5">
+            {[
+              { icon: "🎵", text: "Browse 1,000+ live events" },
+              { icon: "⚡", text: "Instant e-ticket delivery" },
+              { icon: "🔒", text: "Secure & encrypted checkout" },
+            ].map(({ icon, text }, i) => (
+              <motion.div
+                key={text}
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3 backdrop-blur-sm"
+              >
+                <span className="text-base">{icon}</span>
+                <span className="text-white/80 text-sm">{text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

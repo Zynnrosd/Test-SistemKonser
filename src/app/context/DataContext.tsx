@@ -1,17 +1,27 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { CONCERTS, TICKETS, USERS, Concert, Ticket } from "../data/mockData";
+import { CONCERTS, TICKETS, USERS, Concert, Ticket, SeatCategory, PaymentMethod } from "../data/mockData";
 
 interface DataContextType {
   concerts: Concert[];
   tickets: Ticket[];
   getConcert: (id: string) => Concert | undefined;
+  getTicket: (id: string) => Ticket | undefined;
   addConcert: (concert: Omit<Concert, "id" | "createdAt">) => void;
   updateConcert: (id: string, updates: Partial<Concert>) => void;
   softDeleteConcert: (id: string) => void;
   restoreConcert: (id: string) => void;
   hardDeleteConcert: (id: string) => void;
-  bookTicket: (userId: string, concertId: string, quantity: number) => { success: boolean; message: string };
+  bookTicket: (
+    userId: string,
+    concertId: string,
+    quantity: number,
+    seatCategory: SeatCategory,
+    paymentMethod: PaymentMethod
+  ) => { success: boolean; message: string; ticketId?: string };
+  payTicket: (ticketId: string) => { success: boolean; message: string };
+  clearTransactions: () => void;
   getUserTickets: (userId: string) => Ticket[];
+  getPendingTickets: (userId: string) => Ticket[];
   getJoinedData: () => JoinedRecord[];
 }
 
@@ -21,6 +31,7 @@ export interface JoinedRecord {
   quantity: number;
   totalPrice: number;
   ticketStatus: string;
+  seatCategory: string;
   userId: string;
   userName: string;
   userEmail: string;
@@ -42,6 +53,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const getConcert = useCallback(
     (id: string) => concerts.find((c) => c.id === id),
     [concerts]
+  );
+
+  const getTicket = useCallback(
+    (id: string) => tickets.find((t) => t.id === id),
+    [tickets]
   );
 
   const addConcert = useCallback((concert: Omit<Concert, "id" | "createdAt">) => {
@@ -76,7 +92,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const bookTicket = useCallback(
-    (userId: string, concertId: string, quantity: number) => {
+    (
+      userId: string,
+      concertId: string,
+      quantity: number,
+      seatCategory: SeatCategory,
+      paymentMethod: PaymentMethod
+    ) => {
       const concert = concerts.find((c) => c.id === concertId);
       if (!concert) return { success: false, message: "Concert not found." };
       if (concert.status === "archived")
@@ -84,15 +106,22 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (concert.availableSeats < quantity)
         return { success: false, message: `Only ${concert.availableSeats} seats available.` };
 
-      const totalPrice = concert.price * quantity;
+      const multiplier = seatCategory === "VVIP" ? 2.0 : seatCategory === "VIP" ? 1.5 : 1.0;
+      const totalPrice = concert.price * multiplier * quantity;
+      const ticketId = `t${Date.now()}`;
+
+      const nowIso = new Date().toISOString();
       const newTicket: Ticket = {
-        id: `t${Date.now()}`,
+        id: ticketId,
         userId,
         concertId,
         quantity,
         totalPrice,
-        bookingDate: new Date().toISOString().split("T")[0],
-        status: "booked",
+        bookingDate: nowIso.split("T")[0],
+        bookingTimestamp: nowIso,
+        status: "pending",
+        seatCategory,
+        paymentMethod,
       };
       setTickets((prev) => [newTicket, ...prev]);
       setConcerts((prev) =>
@@ -102,13 +131,33 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             : c
         )
       );
-      return { success: true, message: "Tickets booked successfully!" };
+      return { success: true, message: "Ticket added to cart!", ticketId };
     },
     [concerts]
   );
 
+  const payTicket = useCallback((ticketId: string) => {
+    const ticket = tickets.find((t) => t.id === ticketId);
+    if (!ticket) return { success: false, message: "Ticket not found." };
+    if (ticket.status !== "pending") return { success: false, message: "Ticket is not pending payment." };
+    setTickets((prev) =>
+      prev.map((t) => (t.id === ticketId ? { ...t, status: "booked" } : t))
+    );
+    return { success: true, message: "Payment successful! Your ticket is confirmed." };
+  }, [tickets]);
+
+  const clearTransactions = useCallback(() => {
+    // Keep only pending tickets; clear all historical booked/attended/cancelled
+    setTickets((prev) => prev.filter((t) => t.status === "pending"));
+  }, []);
+
   const getUserTickets = useCallback(
-    (userId: string) => tickets.filter((t) => t.userId === userId),
+    (userId: string) => tickets.filter((t) => t.userId === userId && t.status !== "pending"),
+    [tickets]
+  );
+
+  const getPendingTickets = useCallback(
+    (userId: string) => tickets.filter((t) => t.userId === userId && t.status === "pending"),
     [tickets]
   );
 
@@ -122,6 +171,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         quantity: ticket.quantity,
         totalPrice: ticket.totalPrice,
         ticketStatus: ticket.status,
+        seatCategory: ticket.seatCategory,
         userId: ticket.userId,
         userName: user?.name ?? "Unknown",
         userEmail: user?.email ?? "—",
@@ -142,13 +192,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         concerts,
         tickets,
         getConcert,
+        getTicket,
         addConcert,
         updateConcert,
         softDeleteConcert,
         restoreConcert,
         hardDeleteConcert,
         bookTicket,
+        payTicket,
+        clearTransactions,
         getUserTickets,
+        getPendingTickets,
         getJoinedData,
       }}
     >

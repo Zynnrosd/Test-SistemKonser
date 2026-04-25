@@ -7,10 +7,15 @@ import { UserDashboard } from "./pages/UserDashboard";
 import { ConcertDetailPage } from "./pages/ConcertDetailPage";
 import { BookingPage } from "./pages/BookingPage";
 import { MyTicketsPage } from "./pages/MyTicketsPage";
+import { TicketDetailPage } from "./pages/TicketDetailPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { AdminConcertsPage } from "./pages/AdminConcertsPage";
 import { AdminTransactionsPage } from "./pages/AdminTransactionsPage";
 import { DataTablePage } from "./pages/DataTablePage";
+import { FavoritesPage } from "./pages/FavoritesPage";
+import { CartPage } from "./pages/CartPage";
+import { PaymentConfirmPage } from "./pages/PaymentConfirmPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { useAuth } from "./context/AuthContext";
 
 // ─── Layout wrappers ───────────────────────────────────────────────
@@ -22,7 +27,7 @@ function UserLayout() {
   if (currentUser.role === "admin") return <Navigate to="/admin" replace />;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f8f7ff]">
       <Navbar />
       <main className="pt-16">
         <Outlet />
@@ -38,7 +43,7 @@ function AdminLayout() {
   if (currentUser.role !== "admin") return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f8f7ff]">
       <Navbar />
       <div className="flex pt-16">
         <AdminSidebar />
@@ -72,6 +77,11 @@ export const router = createBrowserRouter([
       { path: "concerts/:id", Component: ConcertDetailPage },
       { path: "booking/:id", Component: BookingPage },
       { path: "my-tickets", Component: MyTicketsPage },
+      { path: "tickets/:id", Component: TicketDetailPage },
+      { path: "favorites", Component: FavoritesPage },
+      { path: "cart", Component: CartPage },
+      { path: "payment/:ticketId", Component: PaymentConfirmPage },
+      { path: "profile", Component: ProfilePage },
     ],
   },
   {
@@ -81,6 +91,7 @@ export const router = createBrowserRouter([
       { path: "admin/concerts", Component: AdminConcertsPage },
       { path: "admin/transactions", Component: AdminTransactionsPage },
       { path: "admin/data-table", Component: DataTablePage },
+      { path: "profile", Component: ProfilePage },
     ],
   },
   {

@@ -6,6 +6,13 @@ interface AuthContextType {
   login: (email: string, password: string) => { success: boolean; message: string };
   register: (name: string, email: string, password: string) => { success: boolean; message: string };
   logout: () => void;
+  updateProfile: (data: {
+    name: string;
+    email: string;
+    phone?: string;
+    address?: string;
+    password?: string;
+  }) => { success: boolean; message: string };
   isAdmin: boolean;
 }
 
@@ -51,10 +58,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser(null);
   }, []);
 
+  const updateProfile = useCallback(
+    (data: { name: string; email: string; phone?: string; address?: string; password?: string }) => {
+      if (!currentUser) return { success: false, message: "Not logged in." };
+      const emailTaken = users.find((u) => u.email === data.email && u.id !== currentUser.id);
+      if (emailTaken) return { success: false, message: "Email already in use by another account." };
+
+      const updated: User = {
+        ...currentUser,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        ...(data.password && data.password.length >= 6 ? { password: data.password } : {}),
+      };
+      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updated : u)));
+      setCurrentUser(updated);
+      return { success: true, message: "Profile updated successfully!" };
+    },
+    [currentUser, users]
+  );
+
   const isAdmin = currentUser?.role === "admin";
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, register, logout, isAdmin }}>
+    <AuthContext.Provider value={{ currentUser, login, register, logout, updateProfile, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
