@@ -52,13 +52,11 @@ export function Navbar() {
     navigate("/login");
   };
 
-  // Exact match for /dashboard and /admin, prefix match for others
   const isActive = (path: string) => {
     if (path === "/dashboard" || path === "/admin") return location.pathname === path;
     return location.pathname.startsWith(path);
   };
 
-  // User nav: Favorites & Cart as full menu items (with badges)
   const userNavLinks = [
     { to: "/dashboard", label: "Explore", icon: Compass, badge: null },
     { to: "/my-tickets", label: "My Tickets", icon: Ticket, badge: null },
@@ -70,68 +68,55 @@ export function Navbar() {
     { to: "/admin", label: "Overview", icon: LayoutDashboard, badge: null },
     { to: "/admin/concerts", label: "Concerts", icon: Music2, badge: null },
     { to: "/admin/transactions", label: "Transactions", icon: TrendingUp, badge: null },
-    { to: "/admin/data-table", label: "Data Table", icon: Database, badge: null },
+    { to: "/admin/data-table", label: "Data Base", icon: Database, badge: null },
   ];
 
   const navLinks = isAdmin ? adminNavLinks : userNavLinks;
 
-  // Separate layoutId per role to avoid bubble duplication
-  const activeLayoutId = isAdmin ? "nav-active-admin" : "nav-active-user";
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "glass shadow-xl shadow-black/5"
-          : "bg-transparent border-transparent"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+          ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200"
+          : "bg-transparent border-b border-transparent"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between" style={{ height: "4rem" }}>
 
-          {/* Logo */}
+          {/* Logo Professional */}
           <Link
             to={isAdmin ? "/admin" : "/dashboard"}
-            className="flex items-center gap-3 group flex-shrink-0"
+            className="flex items-center gap-2.5 flex-shrink-0 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-fuchsia-600 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.3)]">
-              <Music2 className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <Music2 className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-foreground text-lg tracking-tight">
+            <span className="font-extrabold text-foreground text-xl tracking-tight">
               Concert<span className="text-primary">Hub</span>
             </span>
           </Link>
 
           {/* Desktop nav links */}
           {currentUser && (
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-2">
               {navLinks.map(({ to, label, icon: Icon, badge }) => {
                 const active = isActive(to);
                 return (
                   <Link
                     key={to}
                     to={to}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                      active
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                    }`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${active
+                        ? "bg-slate-100 text-primary"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                      }`}
                   >
-                    {active && (
-                      <motion.div
-                        layoutId={activeLayoutId}
-                        className="absolute inset-0 rounded-xl bg-primary/10 -z-10 border border-primary/20"
-                        transition={{ type: "spring", stiffness: 500, damping: 38 }}
-                      />
-                    )}
-                    <Icon className={`w-4 h-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                    <Icon className={`w-4 h-4 ${active ? "text-primary" : "text-slate-400"}`} />
                     {label}
                     {badge !== null && (
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${
-                        to === "/favorites"
-                          ? "bg-rose-500/20 text-rose-400"
-                          : "bg-primary/20 text-primary"
-                      }`}>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${to === "/favorites"
+                          ? "bg-rose-100 text-rose-600"
+                          : "bg-primary/10 text-primary"
+                        }`}>
                         {badge}
                       </span>
                     )}
@@ -141,69 +126,43 @@ export function Navbar() {
             </div>
           )}
 
-          {/* Right: profile only */}
-          <div className="flex items-center gap-2">
+          {/* Right Area */}
+          <div className="flex items-center gap-3">
             {currentUser ? (
               <>
-                {/* Profile dropdown */}
-                <div className="relative ml-2">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
+                <div className="relative">
+                  <button
                     onClick={() => setDropdownOpen((v) => !v)}
                     id="profile-btn"
-                    className={`flex items-center gap-3 pl-1.5 pr-3 py-1.5 rounded-full transition-all border ${
-                      dropdownOpen ? "bg-primary/10 border-primary/20" : "bg-white/50 border-border hover:bg-accent hover:border-primary/20 shadow-sm"
-                    }`}
+                    className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors"
                   >
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-fuchsia-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                        {currentUser.name.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white shadow-sm" />
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                      {currentUser.name.charAt(0).toUpperCase()}
                     </div>
-                    <span className="hidden sm:block text-sm font-medium text-foreground">
+                    <span className="hidden sm:block text-sm font-semibold text-slate-700">
                       {currentUser.name.split(" ")[0]}
                     </span>
-                    <motion.div
-                      animate={{ rotate: dropdownOpen ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    </motion.div>
-                  </motion.button>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
 
                   <AnimatePresence>
                     {dropdownOpen && (
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
-                        className="absolute right-0 top-full mt-3 w-64 glass rounded-[2rem] shadow-2xl border-border overflow-hidden z-50"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-50"
                         id="profile-dropdown"
                       >
-                        {/* User info */}
-                        <div className="px-6 py-5 border-b border-border bg-accent/30">
-                          <p className="text-sm font-bold text-foreground truncate">{currentUser.name}</p>
-                          <p className="text-xs text-muted-foreground truncate mb-2">{currentUser.email}</p>
-                          <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full shadow-sm ${isAdmin ? "bg-amber-100 text-amber-700 border border-amber-200" : "bg-primary/10 text-primary border border-primary/20"}`}>
-                            {isAdmin ? <><Shield className="w-3 h-3" /> ADMIN</> : <><User className="w-3 h-3" /> MEMBER</>}
-                          </span>
+                        <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
+                          <p className="text-sm font-bold text-slate-800 truncate">{currentUser.name}</p>
+                          <p className="text-xs text-slate-500 truncate">{currentUser.email}</p>
                         </div>
-
-                        <div className="p-2">
-                          <DropdownItem
-                            icon={<User className="w-4 h-4" />}
-                            label="My Profile"
-                            onClick={() => { navigate("/profile"); setDropdownOpen(false); }}
-                          />
-                          <div className="my-1.5 border-t border-white/5 mx-2" />
-                          <DropdownItem
-                            icon={<LogOut className="w-4 h-4" />}
-                            label="Sign out"
-                            onClick={handleLogout}
-                            danger
-                          />
+                        <div className="p-1">
+                          <DropdownItem icon={<User className="w-4 h-4" />} label="My Profile" onClick={() => { navigate("/profile"); setDropdownOpen(false); }} />
+                          <div className="my-1 border-t border-slate-100" />
+                          <DropdownItem icon={<LogOut className="w-4 h-4" />} label="Sign out" onClick={handleLogout} danger />
                         </div>
                       </motion.div>
                     )}
@@ -213,33 +172,17 @@ export function Navbar() {
                 {/* Mobile hamburger */}
                 <button
                   onClick={() => setMobileOpen((v) => !v)}
-                  className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl text-foreground hover:bg-accent transition-all ml-1 border border-border shadow-sm"
+                  className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
                 >
-                  <AnimatePresence mode="wait">
-                    {mobileOpen ? (
-                      <motion.div key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                        <X className="w-6 h-6" />
-                      </motion.div>
-                    ) : (
-                      <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                        <Menu className="w-6 h-6" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
               </>
             ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/login"
-                  className="px-5 py-2 text-sm font-semibold text-foreground hover:text-primary rounded-full hover:bg-accent transition-all"
-                >
+              <div className="flex items-center gap-2">
+                <Link to="/login" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
                   Sign in
                 </Link>
-                <Link
-                  to="/register"
-                  className="px-5 py-2 text-sm font-bold text-white rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all hover:scale-105"
-                >
+                <Link to="/register" className="px-5 py-2 text-sm font-semibold text-white rounded-lg bg-primary hover:bg-primary/90 shadow-sm transition-colors">
                   Get started
                 </Link>
               </div>
@@ -248,53 +191,32 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu (Simplified) */}
       <AnimatePresence>
         {mobileOpen && currentUser && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden glass border-t border-border overflow-hidden"
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            className="md:hidden bg-white border-b border-slate-200 overflow-hidden"
           >
-            <div className="px-4 py-4 space-y-1.5">
-              {navLinks.map(({ to, label, icon: Icon, badge }, i) => (
-                <motion.div
-                  key={to}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Link
-                    to={to}
-                    onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                      isActive(to) ? "bg-primary/10 text-primary border border-primary/20 shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    {label}
-                    {badge !== null && (
-                      <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-bold ${
-                        to === "/favorites" ? "bg-rose-500/20 text-rose-400" : "bg-primary/20 text-primary"
-                      }`}>{badge}</span>
-                    )}
-                  </Link>
-                </motion.div>
-              ))}
-              <div className="pt-3 border-t border-white/10 mt-2">
+            <div className="px-4 py-4 space-y-1">
+              {navLinks.map(({ to, label, icon: Icon }) => (
                 <Link
-                  to="/profile"
+                  key={to}
+                  to={to}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold ${isActive(to) ? "bg-primary/10 text-primary" : "text-slate-600 hover:bg-slate-50"
+                    }`}
                 >
-                  <User className="w-5 h-5" />
-                  My Profile
+                  <Icon className="w-5 h-5" />
+                  {label}
                 </Link>
+              ))}
+              <div className="pt-2 mt-2 border-t border-slate-100">
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all text-left"
+                  className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-semibold text-rose-600 hover:bg-rose-50 text-left"
                 >
                   <LogOut className="w-5 h-5" />
                   Sign out
@@ -308,21 +230,14 @@ export function Navbar() {
   );
 }
 
-function DropdownItem({
-  icon, label, onClick, danger = false,
-}: {
-  icon: ReactNode; label: string; onClick: () => void; danger?: boolean;
-}) {
+function DropdownItem({ icon, label, onClick, danger = false }: { icon: ReactNode; label: string; onClick: () => void; danger?: boolean; }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-left ${
-        danger
-          ? "text-red-500 hover:bg-red-50"
-          : "text-foreground hover:bg-accent"
-      }`}
+      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${danger ? "text-rose-600 hover:bg-rose-50" : "text-slate-700 hover:bg-slate-100"
+        }`}
     >
-      <span className={danger ? "text-red-400" : "text-muted-foreground"}>{icon}</span>
+      <span className={danger ? "text-rose-500" : "text-slate-400"}>{icon}</span>
       {label}
     </button>
   );

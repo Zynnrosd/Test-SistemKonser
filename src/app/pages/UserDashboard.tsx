@@ -26,7 +26,7 @@ export function UserDashboard() {
   const [search, setSearch] = useState("");
   const [genre, setGenre] = useState("All");
   const [priceRange, setPriceRange] = useState("All");
-  
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -89,13 +89,12 @@ export function UserDashboard() {
   return (
     <PageTransition className="max-w-7xl mx-auto px-6 py-8">
       {/* Hero Header */}
-      <div className="relative mb-12 rounded-[2.5rem] overflow-hidden glass p-12 shadow-none border-border">
-        {/* Background decoration */}
+      <div className="relative mb-12 rounded-3xl overflow-hidden bg-violet-50/80 border border-violet-100 p-10 md:p-14 shadow-xl">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
           <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-primary/5 blur-[100px]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-          
+
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
@@ -115,10 +114,6 @@ export function UserDashboard() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <span className="flex items-center gap-1.5 px-4 py-2 bg-primary/10 backdrop-blur-md rounded-full text-xs text-primary font-bold border border-primary/20 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5" />
-                Live Music Experience
-              </span>
             </div>
             <h1 className="text-foreground font-extrabold mb-4 tracking-tight leading-none" style={{ fontSize: "3.5rem" }}>
               Discover Amazing<br />
@@ -270,16 +265,16 @@ export function UserDashboard() {
 
       {/* Concert Grid */}
       {filtered.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-32 bg-white rounded-[2.5rem] border border-border shadow-sm"
-          >
-            <div className="w-24 h-24 bg-accent rounded-3xl flex items-center justify-center mx-auto mb-6 border border-border shadow-sm">
-              <Music2 className="w-10 h-10 text-muted-foreground" />
-            </div>
-            <p className="text-foreground font-black text-2xl mb-2">No concerts found</p>
-            <p className="text-muted-foreground text-sm mb-8 font-medium">Try adjusting your search or filters to find what you're looking for.</p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-32 bg-white rounded-[2.5rem] border border-border shadow-sm"
+        >
+          <div className="w-24 h-24 bg-accent rounded-3xl flex items-center justify-center mx-auto mb-6 border border-border shadow-sm">
+            <Music2 className="w-10 h-10 text-muted-foreground" />
+          </div>
+          <p className="text-foreground font-black text-2xl mb-2">No concerts found</p>
+          <p className="text-muted-foreground text-sm mb-8 font-medium">Try adjusting your search or filters to find what you're looking for.</p>
           <button
             onClick={() => { setSearch(""); setGenre("All"); setPriceRange("All"); }}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white bg-primary shadow-lg shadow-primary/20 hover:scale-105 text-sm font-bold transition-all"
@@ -302,7 +297,7 @@ export function UserDashboard() {
               </motion.div>
             ))}
           </div>
-          
+
           {/* Shadcn-like Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-8">
@@ -313,17 +308,16 @@ export function UserDashboard() {
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              
+
               <div className="flex items-center gap-1.5">
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-12 h-12 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                      currentPage === i + 1 
-                        ? "bg-primary text-white shadow-lg shadow-primary/20" 
-                        : "border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground"
-                    }`}
+                    className={`w-12 h-12 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${currentPage === i + 1
+                      ? "bg-primary text-white shadow-lg shadow-primary/20"
+                      : "border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground"
+                      }`}
                   >
                     {i + 1}
                   </button>

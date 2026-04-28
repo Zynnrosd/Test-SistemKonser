@@ -24,26 +24,17 @@ import { useAuth } from "./context/AuthContext";
 
 function UserLayout() {
   const { currentUser } = useAuth();
-
   if (!currentUser) return <Navigate to="/login" replace />;
   if (currentUser.role === "admin") return <Navigate to="/admin" replace />;
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans flex flex-col">
-      {/* Immersive Background Effects */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-multiply" />
-      </div>
-
-      <div className="relative z-10 flex flex-col flex-1">
-        <Navbar />
-        <main className="pt-20 flex-1">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <Navbar />
+      {/* flex-1 memastikan main mengambil sisa ruang agar footer tetap di bawah */}
+      <main className="flex-1 pt-20">
+        <Outlet />
+      </main>
+      <Footer />
     </div>
   );
 }
@@ -55,20 +46,18 @@ function AdminLayout() {
   if (currentUser.role !== "admin") return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans flex">
-      {/* Immersive Background Effects */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-multiply" />
-      </div>
-
+    <div className="min-h-screen bg-slate-50 flex font-sans">
+      {/* Sidebar sekarang setinggi layar penuh */}
       <AdminSidebar />
-      <div className="relative z-10 flex flex-col flex-1 ml-60">
-        <main className="flex-1 p-8">
+
+      {/* Area Konten Utama */}
+      <main className="flex-1 ml-64 flex flex-col min-h-screen">
+        <div className="flex-1 p-8">
           <Outlet />
-        </main>
-      </div>
+        </div>
+        {/* Footer Admin disesuaikan agar tetap di bawah konten */}
+        <Footer />
+      </main>
     </div>
   );
 }
