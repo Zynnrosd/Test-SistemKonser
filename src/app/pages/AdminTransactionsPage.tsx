@@ -99,14 +99,14 @@ export function AdminTransactionsPage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-gray-900 font-bold text-2xl mb-1">Ticket Transactions</h1>
-          <p className="text-gray-400 text-sm">All booking records across users and concerts</p>
+          <h1 className="text-foreground font-black text-3xl mb-1 tracking-tight">Ticket Transactions</h1>
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">All booking records across users and concerts</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => setShowClearConfirm(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-red-200 bg-red-50 text-red-500 hover:bg-red-100 text-sm font-medium transition-all"
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl border border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100 text-sm font-black transition-all shadow-sm shadow-rose-500/10"
         >
           <Trash2 className="w-4 h-4" />
           Clear History
@@ -135,39 +135,39 @@ export function AdminTransactionsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.92, y: 12 }}
+              initial={{ scale: 0.95, y: 12 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.92, y: 12 }}
-              className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 max-w-sm w-full"
+              exit={{ scale: 0.95, y: 12 }}
+              className="bg-white rounded-[2.5rem] shadow-2xl border border-border p-10 max-w-sm w-full"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
+              <div className="flex items-start justify-between mb-6">
+                <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center shadow-sm border border-rose-100">
+                  <AlertTriangle className="w-7 h-7 text-rose-500" />
                 </div>
                 <button
                   onClick={() => setShowClearConfirm(false)}
-                  className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-all"
+                  className="w-10 h-10 flex items-center justify-center rounded-2xl text-muted-foreground hover:bg-accent transition-all border border-border shadow-sm"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-              <h3 className="text-gray-900 font-semibold text-base mb-1">Clear transaction history?</h3>
-              <p className="text-gray-400 text-sm mb-5">
+              <h3 className="text-foreground font-black text-xl mb-2 tracking-tight">Clear transaction history?</h3>
+              <p className="text-muted-foreground text-sm mb-8 font-medium leading-relaxed">
                 This will permanently remove all booked, attended, and cancelled records. Pending tickets will be preserved.
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-4">
                 <button
                   onClick={() => setShowClearConfirm(false)}
-                  className="flex-1 py-2 px-4 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-all"
+                  className="flex-1 py-3 rounded-2xl border border-border text-muted-foreground text-sm font-bold hover:bg-accent transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleClear}
-                  className="flex-1 py-2 px-4 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-all shadow-sm"
+                  className="flex-1 py-3 rounded-2xl bg-rose-500 text-white text-sm font-black hover:bg-rose-600 transition-all shadow-xl shadow-rose-500/20"
                 >
                   Clear All
                 </button>
@@ -178,35 +178,36 @@ export function AdminTransactionsPage() {
       </AnimatePresence>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map(({ label, value, icon: Icon, color, bg, border }, i) => (
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-6">
+        {stats.map(({ label, value, icon: Icon, color, bg }, i) => (
           <motion.div
             key={label}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
-            className={`bg-white rounded-2xl border ${border} shadow-sm p-5`}
+            className="bg-white rounded-[2rem] border border-border shadow-sm p-8 relative group overflow-hidden"
           >
-            <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center mb-3`}>
-              <Icon className={`w-5 h-5 ${color}`} />
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center mb-6 border border-border shadow-sm relative z-10`}>
+              <Icon className={`w-6 h-6 ${color}`} />
             </div>
-            <p className={`text-2xl font-bold ${color} mb-0.5`}>{value}</p>
-            <p className="text-xs text-gray-400 font-medium">{label}</p>
+            <p className={`text-3xl font-black ${color} mb-1 tracking-tighter relative z-10`}>{value}</p>
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest relative z-10">{label}</p>
           </motion.div>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col sm:flex-row gap-3">
+      <div className="bg-white rounded-[2rem] border border-border shadow-sm p-6 flex flex-col sm:flex-row gap-4">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by user, concert, booking ID..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:bg-white transition-all"
+            className="w-full pl-12 pr-5 py-3 rounded-2xl border border-border bg-accent text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold"
           />
           {search && (
             <button
@@ -219,15 +220,15 @@ export function AdminTransactionsPage() {
         </div>
 
         {/* Status filter as pill tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 flex-wrap">
+        <div className="flex gap-1 bg-accent rounded-2xl p-1.5 border border-border flex-wrap">
           {(["all", "booked", "pending", "attended", "cancelled"] as FilterStatus[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all capitalize uppercase tracking-widest ${
                 filter === f
-                  ? `bg-white shadow-sm ${STATUS_COLORS[f]}`
-                  : "text-gray-400 hover:text-gray-600"
+                  ? `bg-white shadow-sm ring-1 ring-border ${STATUS_COLORS[f]}`
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {f}
@@ -237,15 +238,15 @@ export function AdminTransactionsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[2rem] border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/60">
+              <tr className="border-b border-border bg-accent/30">
                 {["Booking ID", "Customer", "Concert", "Date", "Qty", "Total", "Status"].map((h) => (
                   <th
                     key={h}
-                    className="px-5 py-3 text-left text-xs text-gray-400 uppercase tracking-wider font-semibold"
+                    className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black"
                   >
                     {h}
                   </th>
@@ -279,44 +280,44 @@ export function AdminTransactionsPage() {
                   transition={{ delay: i * 0.02 }}
                   className="hover:bg-gray-50/60 transition-colors group"
                 >
-                  <td className="px-5 py-3.5">
-                    <span className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">
+                  <td className="px-6 py-4">
+                    <span className="font-mono text-[10px] text-primary font-black bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10">
                       {ticket.id.toUpperCase()}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center flex-shrink-0 text-sm font-black shadow-sm">
                         {user?.name?.charAt(0) ?? "?"}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm text-gray-800 font-medium truncate max-w-[120px]">
+                        <p className="text-sm text-foreground font-black truncate max-w-[150px] tracking-tight">
                           {user?.name ?? "Unknown"}
                         </p>
-                        <p className="text-xs text-gray-400 truncate max-w-[120px]">{user?.email}</p>
+                        <p className="text-[10px] text-muted-foreground font-bold truncate max-w-[150px] uppercase tracking-wider">{user?.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-6 py-4">
                     <div className="min-w-0">
-                      <p className="text-sm text-gray-800 font-medium truncate max-w-[180px]">
+                      <p className="text-sm text-foreground font-black truncate max-w-[200px] tracking-tight">
                         {concert?.title ?? "—"}
                       </p>
-                      <p className="text-xs text-indigo-400">{concert?.artist}</p>
+                      <p className="text-xs text-primary font-bold">{concert?.artist}</p>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5">
-                    <span className="text-sm text-gray-500">{ticket.bookingDate}</span>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-muted-foreground font-bold">{ticket.bookingDate}</span>
                   </td>
-                  <td className="px-5 py-3.5">
-                    <span className="text-sm text-gray-700 font-semibold">×{ticket.quantity}</span>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-foreground font-black tracking-tight">×{ticket.quantity}</span>
                   </td>
-                  <td className="px-5 py-3.5">
-                    <span className="text-sm text-gray-900 font-bold">
+                  <td className="px-6 py-4">
+                    <span className="text-base text-foreground font-black tracking-tighter">
                       ${ticket.totalPrice.toFixed(2)}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-6 py-4">
                     <StatusBadge status={ticket.status} />
                   </td>
                 </motion.tr>
@@ -327,14 +328,14 @@ export function AdminTransactionsPage() {
 
         {/* Table footer */}
         {filtered.length > 0 && (
-          <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/40">
-            <div className="flex items-center gap-1.5 text-xs text-gray-400">
-              <ChevronDown className="w-3 h-3" />
-              Showing <span className="font-semibold text-gray-600">{filtered.length}</span> of{" "}
-              <span className="font-semibold text-gray-600">{tickets.length}</span> records
+          <div className="px-8 py-5 border-t border-border flex items-center justify-between bg-accent/30 font-bold">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-widest">
+              <ChevronDown className="w-4 h-4" />
+              Showing <span className="text-foreground">{filtered.length}</span> of{" "}
+              <span className="text-foreground">{tickets.length}</span> records
             </div>
-            <span className="text-xs font-semibold text-gray-700">
-              Revenue: <span className="text-emerald-600">${totalRevenue.toFixed(2)}</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-widest">
+              Total Revenue: <span className="text-emerald-600 text-lg font-black tracking-tighter ml-2">${totalRevenue.toFixed(2)}</span>
             </span>
           </div>
         )}

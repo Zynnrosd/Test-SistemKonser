@@ -22,14 +22,14 @@ export function AdminSidebar() {
   const location = useLocation();
 
   return (
-    <aside className="w-60 min-h-full bg-white border-r border-gray-100/80 flex flex-col pt-5 pb-8 fixed left-0 top-16 bottom-0 shadow-sm">
+    <aside className="w-60 min-h-full glass border-r border-border flex flex-col pt-5 pb-8 fixed left-0 top-16 bottom-0 shadow-none">
       {/* Section header */}
       <div className="px-5 mb-4">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
             <TrendingUp className="w-3 h-3 text-white" />
           </div>
-          <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">
             Control Panel
           </p>
         </div>
@@ -45,16 +45,16 @@ export function AdminSidebar() {
               to={to}
               className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all group ${
                 isActive
-                  ? "bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50/80 hover:text-gray-900"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               }`}
-              style={{ fontWeight: isActive ? 600 : 400 }}
+              style={{ fontWeight: isActive ? 700 : 500 }}
             >
               {/* Active indicator — single element, animated via layout */}
               {isActive && (
                 <motion.div
                   layoutId="sidebar-active-indicator"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-7 rounded-r-full bg-gradient-to-b from-violet-500 to-indigo-600 shadow-sm shadow-indigo-300"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-7 rounded-r-full bg-primary shadow-sm shadow-primary/20"
                   transition={{ type: "spring", stiffness: 500, damping: 35 }}
                 />
               )}
@@ -62,17 +62,17 @@ export function AdminSidebar() {
               {/* Icon */}
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
                 isActive
-                  ? "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-sm shadow-indigo-200"
-                  : "bg-gray-100 group-hover:bg-gray-200/80"
+                  ? "bg-primary shadow-sm shadow-primary/20"
+                  : "bg-accent group-hover:bg-primary/10"
               }`}>
-                <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-muted-foreground group-hover:text-primary"}`} />
               </div>
 
               <span className="flex-1">{label}</span>
 
               {/* Badge */}
               {badge && (
-                <span className="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200">
                   {badge}
                 </span>
               )}
@@ -82,7 +82,7 @@ export function AdminSidebar() {
                   initial={{ opacity: 0, x: -4 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
-                  <ChevronRight className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                  <ChevronRight className="w-3.5 h-3.5 text-primary/40 flex-shrink-0" />
                 </motion.div>
               )}
             </Link>
@@ -93,33 +93,33 @@ export function AdminSidebar() {
 
       {/* Quick stats */}
       <div className="px-3 mb-3">
-        <div className="rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-indigo-100 p-4 overflow-hidden relative">
+        <div className="rounded-2xl bg-primary/5 border border-primary/10 p-4 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-indigo-100/50 -translate-y-4 translate-x-4" />
           <div className="flex items-center gap-2 mb-3">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="text-xs text-indigo-700 font-bold">
+            <span className="text-xs text-primary font-bold">
               System Status
             </span>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs text-indigo-500">
+              <div className="flex items-center gap-1.5 text-xs text-primary/70 font-medium">
                 <Database className="w-3 h-3" />
                 <span>Database</span>
               </div>
-              <span className="flex items-center gap-1 text-xs text-emerald-600 font-semibold">
+              <span className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-100">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Online
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs text-indigo-500">
+              <div className="flex items-center gap-1.5 text-xs text-primary/70 font-medium">
                 <Users className="w-3 h-3" />
                 <span>3 Tables</span>
               </div>
-              <span className="text-xs text-indigo-400">Full CRUD</span>
+              <span className="text-[10px] font-bold text-primary/50 uppercase">Full CRUD</span>
             </div>
           </div>
         </div>

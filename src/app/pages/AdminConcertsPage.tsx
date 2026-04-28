@@ -104,10 +104,10 @@ export function AdminConcertsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900 mb-1" style={{ fontWeight: 700, fontSize: "1.75rem" }}>
+          <h1 className="text-foreground mb-1 tracking-tighter" style={{ fontWeight: 900, fontSize: "2rem" }}>
             Manage Concerts
           </h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest">
             {concerts.length} total · {concerts.filter(c => c.status === "active").length} active · {concerts.filter(c => c.status === "archived").length} archived
           </p>
         </div>
@@ -115,37 +115,35 @@ export function AdminConcertsPage() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-sm transition-all text-sm"
-          style={{ fontWeight: 500 }}
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl text-white bg-primary shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all text-sm font-black"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           Add Concert
         </motion.button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col sm:flex-row gap-3">
+      <div className="bg-white rounded-[2rem] border border-border shadow-sm p-6 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title, artist, venue..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="w-full pl-12 pr-5 py-3 rounded-2xl border border-border bg-accent text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
           />
         </div>
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+        <div className="flex gap-1 bg-accent rounded-2xl p-1.5 border border-border">
           {(["all", "active", "archived"] as FilterStatus[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-lg text-sm transition-all capitalize ${
+              className={`px-6 py-2 rounded-xl text-sm transition-all capitalize font-bold ${
                 filter === f
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-primary shadow-sm ring-1 ring-border"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
-              style={{ fontWeight: filter === f ? 500 : 400 }}
             >
               {f}
             </button>
@@ -154,27 +152,27 @@ export function AdminConcertsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[2rem] border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="px-5 py-3.5 text-left text-xs text-gray-400 uppercase tracking-wider" style={{ fontWeight: 600 }}>
+              <tr className="border-b border-border bg-accent/30">
+                <th className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black">
                   Concert
                 </th>
-                <th className="px-5 py-3.5 text-left text-xs text-gray-400 uppercase tracking-wider hidden sm:table-cell" style={{ fontWeight: 600 }}>
+                <th className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black hidden sm:table-cell">
                   Date & Venue
                 </th>
-                <th className="px-5 py-3.5 text-left text-xs text-gray-400 uppercase tracking-wider hidden md:table-cell" style={{ fontWeight: 600 }}>
+                <th className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black hidden md:table-cell">
                   Price
                 </th>
-                <th className="px-5 py-3.5 text-left text-xs text-gray-400 uppercase tracking-wider hidden lg:table-cell" style={{ fontWeight: 600 }}>
+                <th className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black hidden lg:table-cell">
                   Seats
                 </th>
-                <th className="px-5 py-3.5 text-left text-xs text-gray-400 uppercase tracking-wider" style={{ fontWeight: 600 }}>
+                <th className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black">
                   Status
                 </th>
-                <th className="px-5 py-3.5 text-right text-xs text-gray-400 uppercase tracking-wider" style={{ fontWeight: 600 }}>
+                <th className="px-6 py-4 text-right text-[10px] text-muted-foreground uppercase tracking-widest font-black">
                   Actions
                 </th>
               </tr>
@@ -196,76 +194,76 @@ export function AdminConcertsPage() {
                   transition={{ delay: i * 0.04 }}
                   className="hover:bg-gray-50/50 transition-colors"
                 >
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-4">
                       <img
                         src={concert.image}
                         alt={concert.title}
-                        className="w-11 h-11 rounded-xl object-cover flex-shrink-0"
+                        className="w-14 h-14 rounded-2xl object-cover flex-shrink-0 shadow-sm"
                       />
                       <div className="min-w-0">
-                        <p className="text-sm text-gray-900 truncate max-w-[180px]" style={{ fontWeight: 500 }}>
+                        <p className="text-sm text-foreground truncate max-w-[220px] font-black tracking-tight">
                           {concert.title}
                         </p>
-                        <p className="text-xs text-indigo-500">{concert.artist}</p>
-                        <p className="text-xs text-gray-400 sm:hidden">{concert.date}</p>
+                        <p className="text-xs text-primary font-bold">{concert.artist}</p>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest sm:hidden mt-1">{concert.date}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-4 hidden sm:table-cell">
-                    <p className="text-sm text-gray-700">{concert.date}</p>
-                    <p className="text-xs text-gray-400 truncate max-w-[160px]">{concert.venue}</p>
+                  <td className="px-6 py-5 hidden sm:table-cell">
+                    <p className="text-sm text-foreground font-bold">{concert.date}</p>
+                    <p className="text-xs text-muted-foreground truncate max-w-[200px] font-medium">{concert.venue}</p>
                   </td>
-                  <td className="px-5 py-4 hidden md:table-cell">
-                    <span className="text-sm text-gray-900" style={{ fontWeight: 600 }}>
+                  <td className="px-6 py-5 hidden md:table-cell">
+                    <span className="text-base text-foreground font-black tracking-tight">
                       ${concert.price.toFixed(2)}
                     </span>
                   </td>
-                  <td className="px-5 py-4 hidden lg:table-cell">
+                  <td className="px-6 py-5 hidden lg:table-cell">
                     <div>
-                      <span className="text-sm text-gray-700">{concert.availableSeats.toLocaleString()}</span>
-                      <span className="text-xs text-gray-400"> / {concert.capacity.toLocaleString()}</span>
+                      <span className="text-sm text-foreground font-bold">{concert.availableSeats.toLocaleString()}</span>
+                      <span className="text-xs text-muted-foreground font-medium"> / {concert.capacity.toLocaleString()}</span>
                     </div>
-                    <div className="h-1 bg-gray-100 rounded-full mt-1.5 w-20">
+                    <div className="h-1.5 bg-accent rounded-full mt-2 w-24 overflow-hidden border border-border/50">
                       <div
-                        className="h-full bg-indigo-400 rounded-full"
+                        className="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(139,92,246,0.3)]"
                         style={{
                           width: `${((concert.capacity - concert.availableSeats) / concert.capacity) * 100}%`,
                         }}
                       />
                     </div>
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-6 py-5">
                     <StatusBadge status={concert.status} />
                   </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center justify-end gap-1">
+                  <td className="px-6 py-5">
+                    <div className="flex items-center justify-end gap-2">
                       <ActionBtn
-                        icon={<Pencil className="w-3.5 h-3.5" />}
+                        icon={<Pencil className="w-4 h-4" />}
                         label="Edit"
                         onClick={() => openEdit(concert)}
-                        color="text-indigo-600 hover:bg-indigo-50"
+                        color="text-primary hover:bg-primary/10"
                       />
                       {concert.status === "active" ? (
                         <ActionBtn
-                          icon={<Archive className="w-3.5 h-3.5" />}
+                          icon={<Archive className="w-4 h-4" />}
                           label="Archive"
                           onClick={() => softDeleteConcert(concert.id)}
-                          color="text-amber-600 hover:bg-amber-50"
+                          color="text-amber-600 hover:bg-amber-100"
                         />
                       ) : (
                         <ActionBtn
-                          icon={<RotateCcw className="w-3.5 h-3.5" />}
+                          icon={<RotateCcw className="w-4 h-4" />}
                           label="Restore"
                           onClick={() => restoreConcert(concert.id)}
-                          color="text-emerald-600 hover:bg-emerald-50"
+                          color="text-emerald-600 hover:bg-emerald-100"
                         />
                       )}
                       <ActionBtn
-                        icon={<Trash2 className="w-3.5 h-3.5" />}
+                        icon={<Trash2 className="w-4 h-4" />}
                         label="Delete"
                         onClick={() => setDeleteConfirm(concert.id)}
-                        color="text-red-500 hover:bg-red-50"
+                        color="text-rose-500 hover:bg-rose-100"
                       />
                     </div>
                   </td>
@@ -409,15 +407,13 @@ export function AdminConcertsPage() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm transition-all"
-                  style={{ fontWeight: 500 }}
+                  className="flex-1 py-3 rounded-2xl border border-border text-muted-foreground hover:bg-accent text-sm font-bold transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-sm shadow-sm transition-all"
-                  style={{ fontWeight: 600 }}
+                  className="flex-1 py-3 rounded-2xl text-white bg-primary text-sm shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all font-black"
                 >
                   {editingConcert ? "Save Changes" : "Create Concert"}
                 </button>
@@ -438,18 +434,16 @@ export function AdminConcertsPage() {
               <p className="text-sm text-gray-600 mb-6 leading-relaxed">
                 This will <span className="text-red-600" style={{ fontWeight: 600 }}>permanently delete</span> this concert and all its data. This action <span style={{ fontWeight: 600 }}>cannot be undone</span>.
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm transition-all"
-                  style={{ fontWeight: 500 }}
+                  className="flex-1 py-3 rounded-2xl border border-border text-muted-foreground hover:bg-accent text-sm font-bold transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => { hardDeleteConcert(deleteConfirm!); setDeleteConfirm(null); }}
-                  className="flex-1 py-2.5 rounded-xl text-white bg-red-500 hover:bg-red-600 text-sm shadow-sm transition-all"
-                  style={{ fontWeight: 600 }}
+                  className="flex-1 py-3 rounded-2xl text-white bg-rose-500 hover:bg-rose-600 text-sm shadow-xl shadow-rose-500/20 font-black transition-all"
                 >
                   Delete Permanently
                 </button>
@@ -464,13 +458,13 @@ export function AdminConcertsPage() {
 
 // Shared sub-components
 const INPUT_CLASS =
-  "w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all";
+  "w-full px-4 py-3 rounded-2xl border border-border bg-accent text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium";
 
 function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
   return (
     <div>
-      <label className="block text-sm text-gray-700 mb-1.5" style={{ fontWeight: 500 }}>
-        {label} {required && <span className="text-red-400">*</span>}
+      <label className="block text-[10px] text-muted-foreground mb-2 font-black uppercase tracking-widest">
+        {label} {required && <span className="text-rose-500">*</span>}
       </label>
       {children}
     </div>
@@ -522,20 +516,20 @@ function Modal({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 8 }}
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-white rounded-3xl shadow-2xl border border-gray-100 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-[2.5rem] shadow-2xl border border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
       >
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <h2 className={`${danger ? "text-red-600" : "text-gray-900"}`} style={{ fontWeight: 600, fontSize: "1rem" }}>
+        <div className="flex items-center justify-between px-8 py-6 border-b border-border">
+          <h2 className={`${danger ? "text-rose-600" : "text-foreground"} font-black text-xl tracking-tight`}>
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-2xl text-muted-foreground hover:bg-accent hover:text-foreground transition-all border border-border shadow-sm"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-8 overflow-y-auto">{children}</div>
       </motion.div>
     </motion.div>
   );

@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import { Navbar } from "./components/Navbar";
 import { AdminSidebar } from "./components/AdminSidebar";
+import { Footer } from "./components/Footer";
+import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { UserDashboard } from "./pages/UserDashboard";
@@ -27,11 +29,21 @@ function UserLayout() {
   if (currentUser.role === "admin") return <Navigate to="/admin" replace />;
 
   return (
-    <div className="min-h-screen bg-[#f8f7ff]">
-      <Navbar />
-      <main className="pt-16">
-        <Outlet />
-      </main>
+    <div className="min-h-screen bg-[#030305] text-white selection:bg-violet-500/30 font-sans flex flex-col">
+      {/* Immersive Background Effects */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-violet-600/10 blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-fuchsia-600/10 blur-[120px] mix-blend-screen" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+      </div>
+
+      <div className="relative z-10 flex flex-col flex-1">
+        <Navbar />
+        <main className="pt-20 flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
@@ -43,13 +55,28 @@ function AdminLayout() {
   if (currentUser.role !== "admin") return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen bg-[#f8f7ff]">
-      <Navbar />
-      <div className="flex pt-16">
-        <AdminSidebar />
-        <main className="flex-1 ml-60 p-6 min-h-[calc(100vh-4rem)]">
-          <Outlet />
-        </main>
+    <div className="min-h-screen bg-[#030305] text-white selection:bg-violet-500/30 font-sans flex flex-col">
+      {/* Immersive Background Effects */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-violet-600/10 blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/10 blur-[120px] mix-blend-screen" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+      </div>
+
+      <div className="relative z-10 flex flex-col flex-1">
+        <Navbar />
+        <div className="flex pt-16 flex-1">
+          <AdminSidebar />
+          <main className="flex-1 ml-60 p-6 flex flex-col">
+            <div className="flex-1">
+              <Outlet />
+            </div>
+          </main>
+        </div>
+        {/* Admin Footer */}
+        <div className="ml-60">
+          <Footer />
+        </div>
       </div>
     </div>
   );
@@ -60,7 +87,7 @@ function AdminLayout() {
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/login" replace />,
+    Component: LandingPage,
   },
   {
     path: "login",

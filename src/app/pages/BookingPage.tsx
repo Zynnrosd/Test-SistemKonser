@@ -114,31 +114,31 @@ export function BookingPage() {
   return (
     <PageTransition className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-        <Link to={`/concerts/${concert.id}`} className="hover:text-indigo-600 transition-colors flex items-center gap-1">
-          <ArrowLeft className="w-3.5 h-3.5" />
+      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8 font-medium">
+        <Link to={`/concerts/${concert.id}`} className="hover:text-primary transition-colors flex items-center gap-1.5">
+          <ArrowLeft className="w-4 h-4" />
           {concert.title}
         </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-gray-600 font-medium">Book Tickets</span>
+        <ChevronRight className="w-4 h-4 text-border" />
+        <span className="text-foreground font-bold">Book Tickets</span>
       </div>
 
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Left: Concert info */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="relative h-44">
+          <div className="bg-white rounded-[2rem] border border-border shadow-sm overflow-hidden sticky top-28">
+            <div className="relative h-48">
               <img src={concert.image} alt={concert.title} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </div>
-            <div className="p-5">
-              <h2 className="text-gray-900 font-semibold text-base mb-0.5">{concert.title}</h2>
-              <p className="text-indigo-500 text-sm font-medium mb-4">{concert.artist}</p>
-              <div className="space-y-2">
-                <SummaryRow icon={<Calendar className="w-3.5 h-3.5" />} text={concert.date} />
-                <SummaryRow icon={<Clock className="w-3.5 h-3.5" />} text={concert.time} />
-                <SummaryRow icon={<MapPin className="w-3.5 h-3.5" />} text={`${concert.venue}, ${concert.city}`} />
-                <SummaryRow icon={<Ticket className="w-3.5 h-3.5" />} text={`${concert.availableSeats} seats remaining`} />
+            <div className="p-8">
+              <h2 className="text-foreground font-black text-xl mb-1">{concert.title}</h2>
+              <p className="text-primary text-sm font-bold mb-6">{concert.artist}</p>
+              <div className="space-y-3">
+                <SummaryRow icon={<Calendar className="w-4 h-4" />} text={concert.date} />
+                <SummaryRow icon={<Clock className="w-4 h-4" />} text={concert.time} />
+                <SummaryRow icon={<MapPin className="w-4 h-4" />} text={`${concert.venue}, ${concert.city}`} />
+                <SummaryRow icon={<Ticket className="w-4 h-4" />} text={`${concert.availableSeats} seats remaining`} />
               </div>
             </div>
           </div>
@@ -147,8 +147,8 @@ export function BookingPage() {
         {/* Right: Booking form */}
         <div className="lg:col-span-3 space-y-4">
           {/* Step 1: Seat Category */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h3 className="text-gray-900 font-semibold text-sm mb-4">1. Choose seat category</h3>
+          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
+            <h3 className="text-foreground font-black text-lg mb-6">1. Choose seat category</h3>
             <div className="space-y-2.5">
               {SEAT_CATEGORIES.map((cat) => {
                 const isSelected = seatCategory === cat.id;
@@ -158,9 +158,9 @@ export function BookingPage() {
                     key={cat.id}
                     onClick={() => setSeatCategory(cat.id)}
                     whileTap={{ scale: 0.99 }}
-                    className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all ${isSelected
-                        ? `${cat.border} ${cat.bg}`
-                        : "border-gray-100 hover:border-gray-200 hover:bg-gray-50/60"
+                    className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all ${isSelected
+                        ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
+                        : "border-accent hover:border-primary/30 hover:bg-accent/50"
                       }`}
                   >
                     <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${isSelected ? `${cat.border} ${cat.bg}` : "border-gray-300"
@@ -168,28 +168,28 @@ export function BookingPage() {
                       {isSelected && <div className={`w-2 h-2 rounded-full ${cat.dot}`} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className={`text-sm font-semibold ${isSelected ? cat.color : "text-gray-700"}`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-sm font-black ${isSelected ? "text-primary" : "text-foreground"}`}>
                           {cat.label}
                         </span>
                         {cat.id === "VIP" && (
-                          <span className="text-xs px-1.5 py-0.5 bg-indigo-100 text-indigo-600 rounded-md font-medium">Popular</span>
+                          <span className="text-[10px] px-2 py-0.5 bg-primary text-white rounded-full font-bold uppercase tracking-wider shadow-sm">Popular</span>
                         )}
                         {cat.id === "VVIP" && (
-                          <span className="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-600 rounded-md font-medium">Premium</span>
+                          <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full border border-amber-200 font-bold uppercase tracking-wider">Premium</span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400">{cat.description}</p>
+                      <p className="text-xs text-muted-foreground font-medium">{cat.description}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className={`text-sm font-bold ${isSelected ? cat.color : "text-gray-700"}`}>
+                      <p className={`text-base font-black ${isSelected ? "text-primary" : "text-foreground"}`}>
                         ${catPrice.toFixed(2)}
                       </p>
                       {cat.multiplier > 1 && (
-                        <p className="text-xs text-gray-400">{cat.multiplier}× base</p>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{cat.multiplier}× base</p>
                       )}
                     </div>
-                    {isSelected && <Check className={`w-4 h-4 flex-shrink-0 ${cat.color}`} />}
+                    {isSelected && <Check className="w-5 h-5 flex-shrink-0 text-primary" />}
                   </motion.button>
                 );
               })}
@@ -197,18 +197,18 @@ export function BookingPage() {
           </div>
 
           {/* Step 2: Quantity */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h3 className="text-gray-900 font-semibold text-sm mb-4">2. Number of tickets</h3>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
+            <h3 className="text-foreground font-black text-lg mb-6">2. Number of tickets</h3>
+            <div className="flex items-center justify-between p-4 bg-accent rounded-2xl">
               <div>
-                <p className="text-sm font-medium text-gray-700">{seatCategory}</p>
-                <p className="text-xs text-gray-400">${(concert.price * selectedTier.multiplier).toFixed(2)} per ticket</p>
+                <p className="text-sm font-bold text-foreground">{seatCategory}</p>
+                <p className="text-xs text-muted-foreground font-medium">${(concert.price * selectedTier.multiplier).toFixed(2)} per ticket</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleQuantityChange(-1)}
                   disabled={quantity <= 1}
-                  className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
@@ -219,7 +219,7 @@ export function BookingPage() {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.7, opacity: 0 }}
                     transition={{ duration: 0.12 }}
-                    className="w-8 text-center text-gray-900 font-bold text-lg"
+                    className="w-10 text-center text-foreground font-black text-xl"
                   >
                     {quantity}
                   </motion.span>
@@ -227,18 +227,18 @@ export function BookingPage() {
                 <button
                   onClick={() => handleQuantityChange(1)}
                   disabled={quantity >= Math.min(8, concert.availableSeats)}
-                  className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <p className="text-xs text-gray-400 text-center mt-2">Max 8 tickets per transaction</p>
+            <p className="text-[10px] text-muted-foreground text-center mt-3 font-bold uppercase tracking-widest">Max 8 tickets per transaction</p>
           </div>
 
           {/* Step 3: Payment Method */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h3 className="text-gray-900 font-semibold text-sm mb-4">3. Payment method</h3>
+          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
+            <h3 className="text-foreground font-black text-lg mb-6">3. Payment method</h3>
             <div className="grid grid-cols-2 gap-2">
               {PAYMENT_METHODS.map((method) => {
                 const isSelected = paymentMethod === method.id;
@@ -247,20 +247,20 @@ export function BookingPage() {
                     key={method.id}
                     onClick={() => setPaymentMethod(method.id)}
                     whileTap={{ scale: 0.97 }}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all ${isSelected
-                        ? "border-indigo-300 bg-indigo-50"
-                        : "border-gray-100 hover:border-gray-200 hover:bg-gray-50"
+                    className={`flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all ${isSelected
+                        ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
+                        : "border-accent hover:border-primary/30 hover:bg-accent/50"
                       }`}
                   >
-                    <span className={isSelected ? "text-indigo-600" : "text-gray-400"}>
+                    <span className={isSelected ? "text-primary" : "text-muted-foreground"}>
                       {method.icon}
                     </span>
                     <div>
-                      <p className={`text-xs font-semibold ${isSelected ? "text-indigo-700" : "text-gray-700"}`}>{method.label}</p>
-                      <p className="text-[10px] text-gray-400">{method.type}</p>
+                      <p className={`text-xs font-bold ${isSelected ? "text-primary" : "text-foreground"}`}>{method.label}</p>
+                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{method.type}</p>
                     </div>
                     {isSelected && (
-                      <Check className="w-3.5 h-3.5 text-indigo-500 ml-auto" />
+                      <Check className="w-4 h-4 text-primary ml-auto" />
                     )}
                   </motion.button>
                 );
@@ -269,13 +269,13 @@ export function BookingPage() {
           </div>
 
           {/* Step 4: Order summary + CTA */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h3 className="text-gray-900 font-semibold text-sm mb-4">4. Order summary</h3>
-            <div className="space-y-2 mb-4">
+          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
+            <h3 className="text-foreground font-black text-lg mb-6">4. Order summary</h3>
+            <div className="space-y-3 mb-6">
               <PriceRow label={`${seatCategory} × ${quantity}`} value={total} />
               <PriceRow label="Service fee (5%)" value={serviceFee} />
-              <div className="pt-2 border-t border-gray-100">
-                <PriceRow label="Total" value={grandTotal} bold />
+              <div className="pt-4 border-t border-border">
+                <PriceRow label="Total Amount" value={grandTotal} bold />
               </div>
             </div>
 
@@ -298,7 +298,7 @@ export function BookingPage() {
               disabled={loading}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-md shadow-indigo-200/50 transition-all disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-white font-black bg-primary shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -316,7 +316,7 @@ export function BookingPage() {
               )}
             </motion.button>
 
-            <p className="text-xs text-gray-400 text-center mt-3">
+            <p className="text-[10px] text-muted-foreground text-center mt-4 font-bold uppercase tracking-widest">
               Tickets reserved for 24 hours after booking
             </p>
           </div>
@@ -328,18 +328,18 @@ export function BookingPage() {
 
 function SummaryRow({ icon, text }: { icon: ReactNode; text: string }) {
   return (
-    <div className="flex items-center gap-2 text-gray-500">
-      <span className="text-gray-400">{icon}</span>
-      <span className="text-xs">{text}</span>
+    <div className="flex items-center gap-3 text-muted-foreground">
+      <span className="text-primary/70">{icon}</span>
+      <span className="text-sm font-medium">{text}</span>
     </div>
   );
 }
 
 function PriceRow({ label, value, bold = false }: { label: string; value: number; bold?: boolean }) {
   return (
-    <div className={`flex justify-between ${bold ? "text-gray-900" : "text-gray-500"}`}>
-      <span className={`text-sm ${bold ? "font-semibold" : ""}`}>{label}</span>
-      <span className={`text-sm ${bold ? "font-bold" : ""}`}>${value.toFixed(2)}</span>
+    <div className={`flex justify-between items-center ${bold ? "text-foreground" : "text-muted-foreground"}`}>
+      <span className={`${bold ? "text-base font-black" : "text-sm font-bold uppercase tracking-wider"}`}>{label}</span>
+      <span className={`${bold ? "text-2xl font-black text-primary" : "text-sm font-bold"}`}>${value.toFixed(2)}</span>
     </div>
   );
 }

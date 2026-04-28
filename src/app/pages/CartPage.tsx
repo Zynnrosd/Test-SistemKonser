@@ -40,11 +40,11 @@ function CountdownBlock({ value, label }: { value: number; label: string }) {
         initial={{ y: -6, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.2 }}
-        className="text-lg font-bold text-gray-800 tabular-nums w-8 text-center"
+        className="text-lg font-black text-foreground tabular-nums w-8 text-center"
       >
         {String(value).padStart(2, "0")}
       </motion.span>
-      <span className="text-[10px] text-gray-400 uppercase tracking-wide">{label}</span>
+      <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{label}</span>
     </div>
   );
 }
@@ -61,12 +61,12 @@ function CartItem({ ticket, concert }: { ticket: ReturnType<ReturnType<typeof us
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -20, height: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={`bg-white rounded-2xl border overflow-hidden transition-all ${
+      className={`bg-white rounded-[2rem] border overflow-hidden transition-all ${
         countdown.expired
           ? "border-red-200 opacity-60"
           : urgency
-          ? "border-orange-200"
-          : "border-gray-100 shadow-sm"
+          ? "border-amber-200 shadow-lg shadow-amber-500/5"
+          : "border-border shadow-sm"
       }`}
     >
       <div className="flex">
@@ -84,58 +84,58 @@ function CartItem({ ticket, concert }: { ticket: ReturnType<ReturnType<typeof us
         <div className="flex-1 px-5 py-4 flex flex-col justify-between gap-2 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-gray-900 font-semibold text-sm truncate">{concert.title}</p>
-              <p className="text-indigo-500 text-xs font-medium">{concert.artist}</p>
+              <p className="text-foreground font-black text-lg truncate tracking-tight">{concert.title}</p>
+              <p className="text-primary text-xs font-bold uppercase tracking-widest">{concert.artist}</p>
             </div>
             {/* Seat badge */}
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg flex-shrink-0 ${
+            <span className={`text-[10px] font-black px-2.5 py-1.5 rounded-xl flex-shrink-0 uppercase tracking-widest border ${
               ticket.seatCategory === "VVIP"
-                ? "bg-amber-50 text-amber-600"
+                ? "bg-amber-100 text-amber-700 border-amber-200"
                 : ticket.seatCategory === "VIP"
-                ? "bg-indigo-50 text-indigo-600"
-                : "bg-gray-100 text-gray-600"
+                ? "bg-primary/10 text-primary border-primary/20"
+                : "bg-accent text-muted-foreground border-border"
             }`}>
               {ticket.seatCategory}
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs text-gray-400">
-            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{concert.date}</span>
-            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{concert.city}</span>
-            <span className="flex items-center gap-1"><Ticket className="w-3 h-3" />{ticket.quantity}× ticket</span>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground font-bold uppercase tracking-wider">
+            <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{concert.date}</span>
+            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{concert.city}</span>
+            <span className="flex items-center gap-1.5"><Ticket className="w-3.5 h-3.5" />{ticket.quantity}× ticket</span>
           </div>
 
           <div className="flex items-center justify-between gap-3">
             {/* Countdown */}
             {countdown.expired ? (
-              <span className="flex items-center gap-1.5 text-xs text-red-500 font-medium">
-                <AlertTriangle className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1.5 text-xs text-red-500 font-black uppercase tracking-widest">
+                <AlertTriangle className="w-4 h-4" />
                 Booking expired
               </span>
             ) : (
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl ${urgency ? "bg-orange-50" : "bg-gray-50"}`}>
-                <Clock className={`w-3.5 h-3.5 flex-shrink-0 ${urgency ? "text-orange-500" : "text-gray-400"}`} />
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl ${urgency ? "bg-amber-100 border border-amber-200" : "bg-accent border border-border"}`}>
+                <Clock className={`w-4 h-4 flex-shrink-0 ${urgency ? "text-amber-600" : "text-muted-foreground"}`} />
                 <div className="flex items-center gap-1.5">
                   <CountdownBlock value={countdown.hours} label="hr" />
-                  <span className="text-gray-400 font-bold text-sm mb-1">:</span>
+                  <span className="text-border font-black text-sm mb-1">:</span>
                   <CountdownBlock value={countdown.minutes} label="min" />
-                  <span className="text-gray-400 font-bold text-sm mb-1">:</span>
+                  <span className="text-border font-black text-sm mb-1">:</span>
                   <CountdownBlock value={countdown.seconds} label="sec" />
                 </div>
               </div>
             )}
 
             {/* Price + Pay */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <p className="text-gray-900 font-bold text-sm">${ticket.totalPrice.toFixed(2)}</p>
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <p className="text-foreground font-black text-xl tracking-tighter">${ticket.totalPrice.toFixed(2)}</p>
               {!countdown.expired && (
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => navigate(`/payment/${ticket.id}`)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-semibold shadow-md shadow-indigo-200/50 transition-all hover:shadow-lg"
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all hover:shadow-2xl hover:shadow-primary/30"
                 >
-                  <CreditCard className="w-3.5 h-3.5" />
+                  <CreditCard className="w-4 h-4" />
                   Pay Now
                 </motion.button>
               )}
@@ -145,13 +145,13 @@ function CartItem({ ticket, concert }: { ticket: ReturnType<ReturnType<typeof us
       </div>
 
       {/* Bottom strip */}
-      <div className={`px-5 py-2 text-xs font-mono text-gray-400 border-t flex items-center justify-between ${countdown.expired ? "bg-red-50 border-red-100" : urgency ? "bg-orange-50 border-orange-100" : "bg-gray-50/60 border-gray-100"}`}>
+      <div className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest border-t flex items-center justify-between ${countdown.expired ? "bg-red-50 border-red-100 text-red-400" : urgency ? "bg-amber-50 border-amber-100 text-amber-600" : "bg-accent border-border text-muted-foreground"}`}>
         <span>#{ticket.id.toUpperCase()}</span>
-        <span className={`flex items-center gap-1 font-medium ${countdown.expired ? "text-red-400" : urgency ? "text-orange-500" : "text-gray-400"}`}>
+        <span className="flex items-center gap-1.5">
           {countdown.expired ? (
-            <><Trash2 className="w-3 h-3" /> Expired</>
+            <><Trash2 className="w-3.5 h-3.5" /> Expired</>
           ) : urgency ? (
-            <><AlertTriangle className="w-3 h-3" /> Expiring soon!</>
+            <><AlertTriangle className="w-3.5 h-3.5" /> Expiring soon!</>
           ) : (
             <>Pending payment</>
           )}
@@ -177,24 +177,24 @@ export function CartPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-9 h-9 bg-indigo-50 rounded-2xl flex items-center justify-center">
-              <ShoppingCart className="w-4.5 h-4.5 text-indigo-600" />
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 bg-primary/10 rounded-[1.25rem] flex items-center justify-center border border-primary/20 shadow-sm">
+              <ShoppingCart className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-gray-900 font-bold text-2xl">Cart</h1>
+            <h1 className="text-foreground font-black text-3xl tracking-tight">Your Cart</h1>
             {cartItems.length > 0 && (
-              <span className="text-xs font-semibold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-black bg-primary text-white px-2.5 py-1 rounded-full uppercase tracking-widest shadow-md shadow-primary/20">
                 {cartItems.length}
               </span>
             )}
           </div>
-          <p className="text-gray-400 text-sm ml-11">Complete payment within 24 hours to confirm your booking</p>
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest ml-1">Complete payment within 24 hours</p>
         </div>
         <Link
           to="/dashboard"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-all"
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl border border-border text-foreground hover:bg-accent text-sm font-black transition-all shadow-sm"
         >
-          <Music2 className="w-4 h-4" />
+          <Music2 className="w-5 h-5" />
           Explore
         </Link>
       </div>
@@ -204,19 +204,19 @@ export function CartPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-24"
+          className="text-center py-32"
         >
-          <div className="w-20 h-20 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <ShoppingCart className="w-10 h-10 text-indigo-200" />
+          <div className="w-24 h-24 bg-accent rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
+            <ShoppingCart className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h2 className="text-gray-700 font-semibold mb-1">Your cart is empty</h2>
-          <p className="text-gray-400 text-sm mb-6">Browse concerts and book tickets to get started</p>
+          <h2 className="text-foreground font-black text-2xl mb-2 tracking-tight">Your cart is empty</h2>
+          <p className="text-muted-foreground text-sm mb-10 font-medium">Browse concerts and book tickets to get started</p>
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white bg-gradient-to-r from-violet-600 to-indigo-600 text-sm font-semibold shadow-md shadow-indigo-200/50"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white bg-primary text-base font-black shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all"
           >
             Discover Concerts
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
       ) : (
@@ -232,19 +232,19 @@ export function CartPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center justify-between"
+            className="bg-white rounded-[2rem] border border-border shadow-2xl shadow-primary/5 p-8 flex items-center justify-between"
           >
             <div>
-              <p className="text-sm text-gray-400 mb-0.5">Total pending</p>
-              <p className="text-2xl font-bold text-gray-900">${total.toFixed(2)}</p>
+              <p className="text-[10px] text-muted-foreground mb-1 font-black uppercase tracking-widest">Total pending</p>
+              <p className="text-4xl font-black text-foreground tracking-tighter">${total.toFixed(2)}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-gray-400 mb-2">{cartItems.length} item{cartItems.length !== 1 ? "s" : ""} in cart</p>
+              <p className="text-xs text-muted-foreground mb-3 font-bold uppercase tracking-widest">{cartItems.length} item{cartItems.length !== 1 ? "s" : ""} in cart</p>
               <Link
                 to="/my-tickets"
-                className="inline-flex items-center gap-1.5 text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-black transition-all"
               >
-                View confirmed tickets <ArrowRight className="w-3.5 h-3.5" />
+                View confirmed tickets <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </motion.div>

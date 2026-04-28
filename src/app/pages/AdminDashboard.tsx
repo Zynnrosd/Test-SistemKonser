@@ -60,43 +60,45 @@ export function AdminDashboard() {
     <PageTransition className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-gray-900 mb-1" style={{ fontWeight: 700, fontSize: "1.75rem" }}>
+        <h1 className="text-foreground mb-1" style={{ fontWeight: 800, fontSize: "2.25rem", letterSpacing: "-0.025em" }}>
           Admin Overview
         </h1>
-        <p className="text-gray-500 text-sm">Monitor your concert management system at a glance.</p>
+        <p className="text-muted-foreground text-sm font-medium">Monitor your concert management system at a glance.</p>
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map(({ label, value, sub, icon: Icon, color, bg, gradient }, i) => (
+        {stats.map(({ label, value, sub, icon: Icon, color, bg }, i) => (
           <motion.div
             key={label}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.07 }}
-            className={`bg-gradient-to-br ${gradient} rounded-2xl border border-white/80 p-5 shadow-sm`}
+            className="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
-            <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center mb-3`}>
-              <Icon className={`w-5 h-5 ${color}`} />
+            <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-primary/5`}>
+              <Icon className={`w-6 h-6 ${color}`} />
             </div>
-            <p className="text-gray-900 mb-0.5" style={{ fontWeight: 700, fontSize: "1.4rem" }}>{value}</p>
-            <p className="text-sm text-gray-700 mb-0.5" style={{ fontWeight: 500 }}>{label}</p>
-            <p className="text-xs text-gray-500">{sub}</p>
+            <p className="text-foreground mb-0.5" style={{ fontWeight: 800, fontSize: "1.75rem" }}>{value}</p>
+            <p className="text-sm text-muted-foreground mb-1 font-bold uppercase tracking-wider">{label}</p>
+            <p className="text-xs text-primary/60 font-medium">{sub}</p>
           </motion.div>
         ))}
       </div>
 
       <div className="grid lg:grid-cols-5 gap-5">
         {/* Recent bookings */}
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-gray-900" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+        <div className="lg:col-span-3 bg-white rounded-3xl border border-border shadow-sm p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Activity className="w-5 h-5 text-primary" />
+              </div>
+              <h2 className="text-foreground" style={{ fontWeight: 800, fontSize: "1.1rem" }}>
                 Recent Bookings
               </h2>
             </div>
-            <span className="text-xs text-gray-400">{tickets.length} total</span>
+            <span className="text-xs font-bold px-3 py-1 bg-accent text-muted-foreground rounded-full border border-border">{tickets.length} total</span>
           </div>
           <div className="space-y-3">
             {recentTickets.map((ticket, i) => {
@@ -108,24 +110,24 @@ export function AdminDashboard() {
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + i * 0.05 }}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-4 p-4 rounded-2xl hover:bg-accent transition-all group"
                 >
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs" style={{ fontWeight: 700 }}>
+                  <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+                    <span className="text-white text-xs" style={{ fontWeight: 800 }}>
                       {user?.name?.charAt(0) ?? "?"}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 truncate" style={{ fontWeight: 500 }}>
+                    <p className="text-sm text-foreground truncate font-bold" style={{ fontSize: "0.95rem" }}>
                       {user?.name ?? "Unknown"}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">{concert?.title ?? "Unknown Concert"}</p>
+                    <p className="text-xs text-muted-foreground truncate font-medium">{concert?.title ?? "Unknown Concert"}</p>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="text-sm text-gray-900" style={{ fontWeight: 600 }}>
+                    <p className="text-sm text-foreground font-black">
                       ${ticket.totalPrice.toFixed(2)}
                     </p>
-                    <p className="text-xs text-gray-400">{ticket.bookingDate}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{ticket.bookingDate}</p>
                   </div>
                   <StatusBadge status={ticket.status} />
                 </motion.div>
@@ -137,15 +139,17 @@ export function AdminDashboard() {
         {/* Concert status */}
         <div className="lg:col-span-2 space-y-4">
           {/* Status breakdown */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <div className="flex items-center gap-2 mb-5">
-              <TrendingUp className="w-4 h-4 text-indigo-500" />
-              <h2 className="text-gray-900" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+          <div className="bg-white rounded-3xl border border-border shadow-sm p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-primary" />
+              </div>
+              <h2 className="text-foreground" style={{ fontWeight: 800, fontSize: "1.1rem" }}>
                 Concert Status
               </h2>
             </div>
-            <div className="space-y-3">
-              <StatusBar label="Active" count={activeConcerts.length} total={concerts.length} color="bg-indigo-500" />
+            <div className="space-y-4">
+              <StatusBar label="Active" count={activeConcerts.length} total={concerts.length} color="bg-primary shadow-lg shadow-primary/20" />
               <StatusBar label="Archived" count={archivedConcerts.length} total={concerts.length} color="bg-amber-400" />
               <StatusBar
                 label="Sold Out"
@@ -157,8 +161,8 @@ export function AdminDashboard() {
           </div>
 
           {/* Top concerts by tickets */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="text-gray-900 mb-4" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+          <div className="bg-white rounded-3xl border border-border shadow-sm p-8">
+            <h2 className="text-foreground mb-6" style={{ fontWeight: 800, fontSize: "1.1rem" }}>
               Most Booked
             </h2>
             <div className="space-y-2.5">
@@ -170,14 +174,14 @@ export function AdminDashboard() {
                 .sort((a, b) => b.bookings - a.bookings)
                 .slice(0, 4)
                 .map(({ concert, bookings }) => (
-                  <div key={concert.id} className="flex items-center justify-between gap-3">
+                  <div key={concert.id} className="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-accent transition-colors">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-700 truncate" style={{ fontWeight: 500 }}>
+                      <p className="text-sm text-foreground truncate font-bold">
                         {concert.title}
                       </p>
-                      <p className="text-xs text-gray-400">{concert.artist}</p>
+                      <p className="text-xs text-muted-foreground font-medium">{concert.artist}</p>
                     </div>
-                    <span className="flex-shrink-0 text-xs px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg" style={{ fontWeight: 600 }}>
+                    <span className="flex-shrink-0 text-[10px] px-2.5 py-1 bg-primary/10 text-primary rounded-full border border-primary/20 font-bold uppercase">
                       {bookings} bookings
                     </span>
                   </div>
@@ -194,11 +198,11 @@ function StatusBar({ label, count, total, color }: { label: string; count: numbe
   const pct = total > 0 ? (count / total) * 100 : 0;
   return (
     <div>
-      <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+      <div className="flex justify-between text-[10px] text-muted-foreground mb-2 font-bold uppercase tracking-wider">
         <span>{label}</span>
-        <span style={{ fontWeight: 600 }}>{count} of {total}</span>
+        <span>{count} of {total}</span>
       </div>
-      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-accent rounded-full overflow-hidden border border-border/50">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}

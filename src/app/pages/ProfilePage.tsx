@@ -60,10 +60,10 @@ export function ProfilePage() {
   };
 
   const inputClass = (field: string) =>
-    `w-full px-4 py-2.5 rounded-xl border bg-[#fafafa] text-gray-900 placeholder-gray-300 text-sm outline-none transition-all ${
+    `w-full px-4 py-3 rounded-2xl border bg-accent text-foreground placeholder-muted-foreground text-sm outline-none transition-all font-bold ${
       focused === field
-        ? "border-indigo-400 ring-3 ring-indigo-100 bg-white"
-        : "border-gray-200 hover:border-gray-300"
+        ? "border-primary ring-4 ring-primary/10 bg-white"
+        : "border-border hover:border-muted-foreground/30"
     }`;
 
   return (
@@ -71,41 +71,41 @@ export function ProfilePage() {
       {/* Back */}
       <Link
         to="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-6"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-all mb-8 font-black uppercase tracking-widest"
       >
-        <ArrowLeft className="w-3.5 h-3.5" />
+        <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </Link>
 
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
+      <div className="mb-10">
+        <div className="flex items-center gap-4">
           {/* Avatar */}
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-200/50">
+          <div className="w-16 h-16 rounded-[1.5rem] bg-primary flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-primary/20 border border-primary/20">
             {currentUser.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-gray-900 font-bold text-2xl">{currentUser.name}</h1>
-            <p className="text-gray-400 text-sm">{currentUser.email}</p>
+            <h1 className="text-foreground font-black text-3xl tracking-tight leading-none mb-1">{currentUser.name}</h1>
+            <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest">{currentUser.email}</p>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Personal info */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="w-7 h-7 bg-indigo-50 rounded-xl flex items-center justify-center">
-              <User className="w-3.5 h-3.5 text-indigo-600" />
+        <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 shadow-sm">
+              <User className="w-5 h-5 text-primary" />
             </div>
-            <h2 className="text-gray-900 font-semibold text-sm">Personal Information</h2>
+            <h2 className="text-foreground font-black text-lg tracking-tight">Personal Information</h2>
           </div>
 
           <div className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                 <input
                   type="text"
                   value={name}
@@ -121,9 +121,9 @@ export function ProfilePage() {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                 <input
                   type="email"
                   value={email}
@@ -139,9 +139,9 @@ export function ProfilePage() {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5">Phone Number</label>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                 <input
                   type="tel"
                   value={phone}
@@ -156,9 +156,9 @@ export function ProfilePage() {
 
             {/* Address */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5">Address</label>
               <div className="relative">
-                <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-gray-300" />
+                <MapPin className="absolute left-4 top-4 w-5 h-5 text-muted-foreground/40" />
                 <textarea
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
@@ -174,45 +174,45 @@ export function ProfilePage() {
         </div>
 
         {/* Password change */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="w-7 h-7 bg-violet-50 rounded-xl flex items-center justify-center">
-              <Lock className="w-3.5 h-3.5 text-violet-600" />
+        <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 shadow-sm">
+              <Lock className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-gray-900 font-semibold text-sm">Change Password</h2>
-              <p className="text-xs text-gray-400">Leave blank to keep current password</p>
+              <h2 className="text-foreground font-black text-lg tracking-tight">Change Password</h2>
+              <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Leave blank to keep current password</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5">New Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setFocused("password")}
                   onBlur={() => setFocused(null)}
-                  placeholder="New password (min. 6 characters)"
-                  className={`${inputClass("password")} pl-10 pr-11`}
+                  placeholder="Min. 6 characters"
+                  className={`${inputClass("password")} pl-12 pr-11`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm New Password</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5">Confirm New Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                 <input
                   type="password"
                   value={confirmPassword}
@@ -220,7 +220,7 @@ export function ProfilePage() {
                   onFocus={() => setFocused("confirm")}
                   onBlur={() => setFocused(null)}
                   placeholder="Repeat new password"
-                  className={`${inputClass("confirm")} pl-10`}
+                  className={`${inputClass("confirm")} pl-12`}
                 />
               </div>
             </div>
@@ -259,7 +259,7 @@ export function ProfilePage() {
           disabled={loading}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-indigo-200/50 transition-all disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-3 py-4 px-8 rounded-2xl text-white font-black bg-primary shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all disabled:opacity-60"
         >
           {loading ? (
             <span className="flex items-center gap-2">
