@@ -38,7 +38,7 @@ export function LoginPage() {
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-[440px] glass rounded-[2.5rem] border border-border shadow-2xl overflow-hidden relative z-10"
+        className="w-full max-w-[440px] bg-white rounded-[3rem] border border-border shadow-2xl overflow-hidden relative z-10"
       >
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
         
@@ -46,8 +46,8 @@ export function LoginPage() {
           <Link to="/" className="w-12 h-12 bg-gradient-to-br from-primary to-fuchsia-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.3)] mb-6 hover:scale-105 transition-transform">
             <Music2 className="w-6 h-6 text-white" />
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">Welcome Back</h1>
-          <p className="text-sm text-muted-foreground text-center mb-8">Enter your credentials to access your account</p>
+          <h1 className="text-4xl font-black tracking-tighter mb-2 text-foreground uppercase italic">Welcome <span className="text-primary">Back.</span></h1>
+          <p className="text-[10px] text-muted-foreground text-center mb-8 font-black uppercase tracking-widest">Enter your credentials to access your account</p>
 
           <form onSubmit={handleSubmit} className="w-full space-y-5">
             {/* Demo hint */}
@@ -58,7 +58,7 @@ export function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5 ml-1">Email Address</label>
               <input
                 type="email"
                 value={email}
@@ -67,16 +67,16 @@ export function LoginPage() {
                 onBlur={() => setFocused(null)}
                 placeholder="you@example.com"
                 required
-                className={`w-full px-5 py-3.5 rounded-[1.25rem] border bg-white/50 text-foreground placeholder-slate-400 text-sm outline-none transition-all ${
+                className={`w-full px-5 py-4 rounded-2xl border bg-accent/50 text-foreground placeholder-slate-400 text-sm outline-none transition-all font-bold ${
                   focused === "email"
-                    ? "border-primary/50 ring-4 ring-primary/10 bg-white"
+                    ? "border-primary ring-4 ring-primary/10 bg-white"
                     : "border-border hover:border-primary/30"
                 }`}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Password</label>
+              <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2.5 ml-1">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -86,9 +86,9 @@ export function LoginPage() {
                   onBlur={() => setFocused(null)}
                   placeholder="Enter your password"
                   required
-                  className={`w-full px-5 py-3.5 rounded-[1.25rem] border bg-white/50 text-foreground placeholder-slate-400 text-sm outline-none transition-all pr-12 ${
+                  className={`w-full px-5 py-4 rounded-2xl border bg-accent/50 text-foreground placeholder-slate-400 text-sm outline-none transition-all pr-12 font-bold ${
                     focused === "password"
-                      ? "border-primary/50 ring-4 ring-primary/10 bg-white"
+                      ? "border-primary ring-4 ring-primary/10 bg-white"
                       : "border-border hover:border-primary/30"
                   }`}
                 />
@@ -121,7 +121,7 @@ export function LoginPage() {
               disabled={loading}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3.5 px-6 rounded-2xl text-white text-sm font-semibold bg-primary shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all disabled:opacity-60 flex justify-center items-center mt-4"
+              className="w-full py-4 px-8 rounded-2xl text-white text-xs font-black uppercase tracking-widest bg-primary shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all disabled:opacity-60 flex justify-center items-center mt-6"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -129,17 +129,17 @@ export function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Authenticating...
+                  Processing...
                 </span>
               ) : (
-                "Sign In"
+                "Access Account"
               )}
             </motion.button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
+          <p className="text-center text-xs text-muted-foreground mt-8 font-bold uppercase tracking-widest">
             Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:text-primary/80 font-semibold transition-colors">
+            <Link to="/register" className="text-primary hover:underline font-black transition-all">
               Create one
             </Link>
           </p>

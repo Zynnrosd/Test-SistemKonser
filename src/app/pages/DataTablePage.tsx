@@ -26,129 +26,61 @@ export function DataTablePage() {
   return (
     <PageTransition className="space-y-5">
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 mb-1" style={{ fontWeight: 700, fontSize: "1.75rem" }}>
-          Relational Data View
-        </h1>
-        <p className="text-gray-500 text-sm">
-          Full JOIN across <span className="text-indigo-600" style={{ fontWeight: 500 }}>users</span>{" "}
-          ·{" "}
-          <span className="text-violet-600" style={{ fontWeight: 500 }}>concerts</span>{" "}
-          ·{" "}
-          <span className="text-emerald-600" style={{ fontWeight: 500 }}>tickets</span>{" "}
-          tables
-        </p>
-      </div>
-
-      {/* Schema diagram */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Info className="w-4 h-4 text-indigo-500" />
-          <h2 className="text-gray-700" style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-            Database Schema & Relationships
-          </h2>
-        </div>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-2">
-          <SchemaTable
-            name="users"
-            color="bg-indigo-50 border-indigo-200 text-indigo-700"
-            dot="bg-indigo-500"
-            fields={["id (PK)", "name", "email", "role"]}
-          />
-          <div className="flex flex-col items-center gap-1 text-gray-400">
-            <span className="text-xs hidden sm:block">1..N</span>
-            <div className="hidden sm:flex items-center gap-1">
-              <div className="w-8 h-px bg-gray-300" />
-              <Link2 className="w-3.5 h-3.5" />
-              <div className="w-8 h-px bg-gray-300" />
-            </div>
-            <span className="text-xs text-gray-400 hidden sm:block">user_id FK</span>
-          </div>
-          <SchemaTable
-            name="tickets"
-            color="bg-emerald-50 border-emerald-200 text-emerald-700"
-            dot="bg-emerald-500"
-            fields={["id (PK)", "user_id (FK)", "concert_id (FK)", "quantity", "total_price", "status"]}
-          />
-          <div className="flex flex-col items-center gap-1 text-gray-400">
-            <span className="text-xs hidden sm:block">N..1</span>
-            <div className="hidden sm:flex items-center gap-1">
-              <div className="w-8 h-px bg-gray-300" />
-              <Link2 className="w-3.5 h-3.5" />
-              <div className="w-8 h-px bg-gray-300" />
-            </div>
-            <span className="text-xs text-gray-400 hidden sm:block">concert_id FK</span>
-          </div>
-          <SchemaTable
-            name="concerts"
-            color="bg-violet-50 border-violet-200 text-violet-700"
-            dot="bg-violet-500"
-            fields={["id (PK)", "title", "artist", "venue", "date", "price", "status"]}
-          />
-        </div>
-
-        <div className="mt-4 p-3 bg-gray-50 rounded-xl">
-          <p className="text-xs text-gray-500 font-mono leading-relaxed">
-            <span className="text-indigo-600">SELECT</span> t.id, t.quantity, t.total_price, t.status,{" "}
-            <br className="hidden sm:block" />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;u.name, u.email, c.title, c.artist, c.venue, c.date
-            <br />
-            <span className="text-indigo-600">FROM</span> tickets t
-            <br />
-            <span className="text-indigo-600">JOIN</span> users u <span className="text-indigo-600">ON</span> t.user_id = u.id
-            <br />
-            <span className="text-indigo-600">JOIN</span> concerts c <span className="text-indigo-600">ON</span> t.concert_id = c.id
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-foreground tracking-tighter" style={{ fontWeight: 900, fontSize: "2.5rem" }}>
+            Data Hub
+          </h1>
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest mt-1">
+            Joined records across the system
           </p>
         </div>
       </div>
 
+
       {/* Search */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+      <div className="bg-white rounded-[2rem] border border-border shadow-sm p-6">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by user, concert, artist, or ticket ID..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="w-full pl-12 pr-5 py-3.5 rounded-2xl border border-border bg-accent text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white focus:border-primary transition-all font-bold"
           />
         </div>
       </div>
 
       {/* Results count */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          Showing <span className="text-gray-900" style={{ fontWeight: 600 }}>{filtered.length}</span> of{" "}
-          <span className="text-gray-900" style={{ fontWeight: 600 }}>{data.length}</span> records
+      <div className="flex items-center justify-between px-2">
+        <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest">
+          Showing <span className="text-foreground">{filtered.length}</span> of{" "}
+          <span className="text-foreground">{data.length}</span> entries
         </p>
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <Database className="w-3.5 h-3.5" />
-          3-table JOIN
-        </div>
       </div>
 
       {/* Main Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
                 {/* Ticket columns */}
-                <ColumnHeader label="Ticket ID" color="text-emerald-600" prefix="tickets." />
-                <ColumnHeader label="Booking Date" color="text-emerald-600" prefix="tickets." />
-                <ColumnHeader label="Qty" color="text-emerald-600" prefix="tickets." />
-                <ColumnHeader label="Total" color="text-emerald-600" prefix="tickets." />
-                <ColumnHeader label="Status" color="text-emerald-600" prefix="tickets." />
+                <ColumnHeader label="Ticket ID" color="text-primary" />
+                <ColumnHeader label="Booking Date" color="text-primary" />
+                <ColumnHeader label="Qty" color="text-primary" />
+                <ColumnHeader label="Total" color="text-primary" />
+                <ColumnHeader label="Status" color="text-primary" />
                 {/* User columns */}
-                <ColumnHeader label="User Name" color="text-indigo-600" prefix="users." />
-                <ColumnHeader label="Email" color="text-indigo-600" prefix="users." />
+                <ColumnHeader label="User Name" color="text-primary" />
+                <ColumnHeader label="Email" color="text-primary" />
                 {/* Concert columns */}
-                <ColumnHeader label="Concert" color="text-violet-600" prefix="concerts." />
-                <ColumnHeader label="Artist" color="text-violet-600" prefix="concerts." />
-                <ColumnHeader label="Venue" color="text-violet-600" prefix="concerts." />
-                <ColumnHeader label="Date" color="text-violet-600" prefix="concerts." />
-                <ColumnHeader label="Price" color="text-violet-600" prefix="concerts." />
+                <ColumnHeader label="Concert" color="text-primary" />
+                <ColumnHeader label="Artist" color="text-primary" />
+                <ColumnHeader label="Venue" color="text-primary" />
+                <ColumnHeader label="Date" color="text-primary" />
+                <ColumnHeader label="Price" color="text-primary" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -242,20 +174,14 @@ export function DataTablePage() {
 function ColumnHeader({
   label,
   color,
-  prefix,
 }: {
   label: string;
   color: string;
-  prefix: string;
 }) {
   return (
-    <th className="px-4 py-3.5 text-left whitespace-nowrap">
+    <th className="px-6 py-4 text-left whitespace-nowrap bg-accent/30 border-b border-border">
       <div>
-        <span className={`text-xs ${color} opacity-60`} style={{ fontWeight: 500, fontSize: "0.65rem" }}>
-          {prefix}
-        </span>
-        <br />
-        <span className="text-xs text-gray-500 uppercase tracking-wide" style={{ fontWeight: 600 }}>
+        <span className={`text-[10px] ${color} uppercase tracking-widest font-black`}>
           {label}
         </span>
       </div>

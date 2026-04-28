@@ -23,6 +23,7 @@ export function AdminTransactionsPage() {
   const { tickets, concerts, clearTransactions } = useData();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterStatus>("all");
+  const [concertFilter, setConcertFilter] = useState<string>("all");
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [cleared, setCleared] = useState(false);
 
@@ -34,6 +35,7 @@ export function AdminTransactionsPage() {
 
   const filtered = enriched.filter(({ ticket, user, concert }) => {
     const matchStatus = filter === "all" || ticket.status === filter;
+    const matchConcert = concertFilter === "all" || ticket.concertId === concertFilter;
     const query = search.toLowerCase();
     const matchSearch =
       !query ||
@@ -41,7 +43,7 @@ export function AdminTransactionsPage() {
       user?.email?.toLowerCase().includes(query) ||
       concert?.title?.toLowerCase().includes(query) ||
       ticket.id.toLowerCase().includes(query);
-    return matchStatus && matchSearch;
+    return matchStatus && matchConcert && matchSearch;
   });
 
   const totalRevenue = enriched
@@ -97,10 +99,14 @@ export function AdminTransactionsPage() {
   return (
     <PageTransition className="space-y-5">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-foreground font-black text-3xl mb-1 tracking-tight">Ticket Transactions</h1>
-          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">All booking records across users and concerts</p>
+          <h1 className="text-foreground tracking-tighter" style={{ fontWeight: 900, fontSize: "2.5rem" }}>
+            Transactions
+          </h1>
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest mt-1">
+            History of all booking activities
+          </p>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }}
@@ -220,12 +226,12 @@ export function AdminTransactionsPage() {
         </div>
 
         {/* Status filter as pill tabs */}
-        <div className="flex gap-1 bg-accent rounded-2xl p-1.5 border border-border flex-wrap">
+        <div className="flex gap-1 bg-accent rounded-2xl p-1.5 border border-border flex-wrap flex-1">
           {(["all", "booked", "pending", "attended", "cancelled"] as FilterStatus[]).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all capitalize uppercase tracking-widest ${
+              className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all capitalize uppercase tracking-widest flex-1 min-w-[80px] ${
                 filter === f
                   ? `bg-white shadow-sm ring-1 ring-border ${STATUS_COLORS[f]}`
                   : "text-muted-foreground hover:text-foreground"
@@ -234,6 +240,23 @@ export function AdminTransactionsPage() {
               {f}
             </button>
           ))}
+        </div>
+
+        {/* Concert filter dropdown */}
+        <div className="relative min-w-[200px]">
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <select
+            value={concertFilter}
+            onChange={(e) => setConcertFilter(e.target.value)}
+            className="w-full pl-5 pr-10 py-3 rounded-2xl border border-border bg-accent text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-black uppercase tracking-widest appearance-none cursor-pointer"
+          >
+            <option value="all">All Concerts</option>
+            {concerts.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

@@ -62,24 +62,24 @@ export function UserDashboard() {
       label: "Available Concerts",
       value: activeConcerts.length,
       icon: Music2,
-      color: "text-violet-400",
-      bg: "bg-violet-500/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
       emoji: "🎵",
     },
     {
       label: "My Bookings",
       value: userTickets.length,
       icon: Ticket,
-      color: "text-fuchsia-400",
-      bg: "bg-fuchsia-500/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
       emoji: "🎫",
     },
     {
       label: "Upcoming Events",
       value: activeConcerts.filter((c) => new Date(c.date) > new Date()).length,
       icon: TrendingUp,
-      color: "text-cyan-400",
-      bg: "bg-cyan-500/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
       emoji: "🚀",
     },
   ];
@@ -190,7 +190,7 @@ export function UserDashboard() {
                 className="appearance-none px-5 py-4 pr-12 rounded-xl border border-border bg-accent/30 text-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 text-sm font-bold cursor-pointer"
               >
                 {GENRES.map((g) => (
-                  <option key={g} value={g} className="bg-[#05050A] text-white">{GENRE_EMOJIS[g]} {g}</option>
+                  <option key={g} value={g} className="bg-white text-foreground">{GENRE_EMOJIS[g]} {g}</option>
                 ))}
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -202,10 +202,10 @@ export function UserDashboard() {
                 onChange={(e) => setPriceRange(e.target.value)}
                 className="appearance-none px-5 py-4 pr-12 rounded-xl border border-border bg-accent/30 text-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 text-sm font-bold cursor-pointer"
               >
-                <option value="All" className="bg-[#05050A] text-white">💰 Any price</option>
-                <option value="under100" className="bg-[#05050A] text-white">Under $100</option>
-                <option value="100-200" className="bg-[#05050A] text-white">$100–$200</option>
-                <option value="over200" className="bg-[#05050A] text-white">Over $200</option>
+                <option value="All" className="bg-white text-foreground">💰 Any price</option>
+                <option value="under100" className="bg-white text-foreground">Under $100</option>
+                <option value="100-200" className="bg-white text-foreground">$100–$200</option>
+                <option value="over200" className="bg-white text-foreground">Over $200</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             </div>
@@ -309,7 +309,7 @@ export function UserDashboard() {
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-white/5 transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-30 transition-all shadow-sm"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -333,7 +333,7 @@ export function UserDashboard() {
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-white/5 transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-30 transition-all shadow-sm"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

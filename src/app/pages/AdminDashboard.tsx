@@ -57,13 +57,26 @@ export function AdminDashboard() {
     .slice(0, 5);
 
   return (
-    <PageTransition className="space-y-6">
+    <PageTransition className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-foreground mb-1" style={{ fontWeight: 800, fontSize: "2.25rem", letterSpacing: "-0.025em" }}>
-          Admin Overview
-        </h1>
-        <p className="text-muted-foreground text-sm font-medium">Monitor your concert management system at a glance.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-foreground tracking-tighter" style={{ fontWeight: 900, fontSize: "2.5rem" }}>
+            Overview
+          </h1>
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">
+            System performance & key metrics
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-right hidden sm:block">
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Server Status</p>
+            <p className="text-xs font-bold text-emerald-500 flex items-center justify-end gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Systems Operational
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Stats grid */}

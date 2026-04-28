@@ -102,14 +102,19 @@ export function AdminConcertsPage() {
   return (
     <PageTransition className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-foreground mb-1 tracking-tighter" style={{ fontWeight: 900, fontSize: "2rem" }}>
-            Manage Concerts
+          <h1 className="text-foreground tracking-tighter" style={{ fontWeight: 900, fontSize: "2.5rem" }}>
+            Concerts
           </h1>
-          <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest">
-            {concerts.length} total · {concerts.filter(c => c.status === "active").length} active · {concerts.filter(c => c.status === "archived").length} archived
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+              {concerts.length} TOTAL
+            </span>
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200">
+              {concerts.filter(c => c.status === "active").length} ACTIVE
+            </span>
+          </div>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }}
