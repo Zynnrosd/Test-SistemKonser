@@ -1,340 +1,261 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, Music2, Ticket, TrendingUp, Sparkles, Zap, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { ConcertCard } from "../components/ConcertCard";
 import { PageTransition } from "../components/PageTransition";
+import { Sparkles, Search, SlidersHorizontal, ArrowDownAz, Calendar, DollarSign, Ticket, Music, Star, X } from "lucide-react";
 
-const GENRES = ["All", "Rock / Alternative", "Electronic / House", "Jazz / Neo-Soul", "Classical / Orchestral", "Pop / Indie", "Folk / Indie", "Synthwave / Electronic", "Multi-Genre / Festival"];
-
-const GENRE_EMOJIS: Record<string, string> = {
-  "All": "🎵",
-  "Rock / Alternative": "🎸",
-  "Electronic / House": "🎧",
-  "Jazz / Neo-Soul": "🎷",
-  "Classical / Orchestral": "🎻",
-  "Pop / Indie": "🎤",
-  "Folk / Indie": "🪕",
-  "Synthwave / Electronic": "⚡",
-  "Multi-Genre / Festival": "🎪",
-};
+const CATEGORIES = ["All", "Pop", "Rock", "Jazz", "Hip Hop", "Classical"];
 
 export function UserDashboard() {
-  const { concerts, getUserTickets } = useData();
+  const { concerts } = useData();
   const { currentUser } = useAuth();
-  const [search, setSearch] = useState("");
-  const [genre, setGenre] = useState("All");
-  const [priceRange, setPriceRange] = useState("All");
 
-  // Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeSort, setActiveSort] = useState("Newest");
 
-  const activeConcerts = concerts.filter((c) => c.status === "active");
-  const userTickets = currentUser ? getUserTickets(currentUser.id) : [];
-
-  const filtered = useMemo(() => {
-    return activeConcerts.filter((c) => {
-      const matchSearch =
-        c.title.toLowerCase().includes(search.toLowerCase()) ||
-        c.artist.toLowerCase().includes(search.toLowerCase()) ||
-        c.venue.toLowerCase().includes(search.toLowerCase()) ||
-        c.city.toLowerCase().includes(search.toLowerCase());
-      const matchGenre = genre === "All" || c.genre === genre;
-      const matchPrice =
-        priceRange === "All" ||
-        (priceRange === "under100" && c.price < 100) ||
-        (priceRange === "100-200" && c.price >= 100 && c.price <= 200) ||
-        (priceRange === "over200" && c.price > 200);
-      return matchSearch && matchGenre && matchPrice;
+  // Logic Filter & Sort
+  const processedConcerts = concerts
+    .filter(c => {
+      const matchCat = activeCategory === "All" || c.genre.includes(activeCategory);
+      const matchSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.artist.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCat && matchSearch;
+    })
+    .sort((a, b) => {
+      if (activeSort === "Price: Low to High") return a.price - b.price;
+      if (activeSort === "Price: High to Low") return b.price - a.price;
+      if (activeSort === "Nearest Date") return new Date(a.date).getTime() - new Date(b.date).getTime();
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
     });
-  }, [activeConcerts, search, genre, priceRange]);
 
-  // Reset pagination when filters change
-  useMemo(() => { setCurrentPage(1); }, [search, genre, priceRange]);
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginatedConcerts = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const stats = [
-    {
-      label: "Available Concerts",
-      value: activeConcerts.length,
-      icon: Music2,
-      color: "text-primary",
-      bg: "bg-primary/10",
-      emoji: "🎵",
-    },
-    {
-      label: "My Bookings",
-      value: userTickets.length,
-      icon: Ticket,
-      color: "text-primary",
-      bg: "bg-primary/10",
-      emoji: "🎫",
-    },
-    {
-      label: "Upcoming Events",
-      value: activeConcerts.filter((c) => new Date(c.date) > new Date()).length,
-      icon: TrendingUp,
-      color: "text-primary",
-      bg: "bg-primary/10",
-      emoji: "🚀",
-    },
-  ];
-
-  const isFiltered = search || genre !== "All" || priceRange !== "All";
+  const isFiltered = activeCategory !== "All" || searchQuery !== "" || activeSort !== "Newest";
+  const clearFilters = () => {
+    setActiveCategory("All");
+    setSearchQuery("");
+    setActiveSort("Newest");
+    setShowFilters(false);
+  };
 
   return (
-    <PageTransition className="max-w-7xl mx-auto px-6 py-8">
-      {/* Hero Header */}
-      <div className="relative mb-12 rounded-3xl overflow-hidden bg-violet-50/80 border border-violet-100 p-10 md:p-14 shadow-xl">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
-          <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full bg-primary/5 blur-[100px]" />
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+    <PageTransition className="relative min-h-screen bg-slate-50 pb-48 font-sans text-slate-900 selection:bg-primary/20 overflow-hidden">
 
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="absolute top-10 right-32 w-24 h-24 rounded-full border border-primary/10"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-10 right-16 w-16 h-16 rounded-full border border-primary/10"
-          />
-        </div>
-
-        <div className="relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <div className="flex items-center gap-2 mb-4">
-            </div>
-            <h1 className="text-foreground font-extrabold mb-4 tracking-tight leading-none" style={{ fontSize: "3.5rem" }}>
-              Discover Amazing<br />
-              <span className="text-primary">Live Concerts</span> 🎸
-            </h1>
-            <p className="text-muted-foreground text-xl max-w-md leading-relaxed font-medium">
-              Welcome back, <span className="text-foreground font-bold">{currentUser?.name}</span>! Explore the hottest concerts near you.
-            </p>
-          </motion.div>
-        </div>
+      {/* 1. BACKGROUND AURA (Colorful tapi Tipis/Subtle agar konsisten dengan halaman lain) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Sudut Kiri Atas: Primary/Indigo */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/20 blur-[160px] rounded-full mix-blend-multiply opacity-40" />
+        {/* Sudut Kanan Atas: Fuchsia/Pink */}
+        <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/20 blur-[160px] rounded-full mix-blend-multiply opacity-30" />
+        {/* Sudut Bawah: Cyan/Biru Muda */}
+        <div className="absolute bottom-[0%] left-[20%] w-[60vw] h-[60vw] bg-cyan-400/20 blur-[160px] rounded-full mix-blend-multiply opacity-20" />
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {stats.map(({ label, value, icon: Icon, color, bg, emoji }, i) => (
-          <motion.div
-            key={label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1, duration: 0.6, ease: "easeOut" }}
-            className="relative bg-white rounded-[1.5rem] border border-border p-6 shadow-sm group hover:shadow-xl hover:border-primary/20 transition-all duration-500"
-          >
-            <div className="relative z-10 flex items-start justify-between mb-4">
-              <div className={`w-14 h-14 ${bg} rounded-2xl flex items-center justify-center border border-primary/10 shadow-sm`}>
-                <Icon className={`w-7 h-7 ${color}`} />
-              </div>
-              <span className="text-3xl select-none">{emoji}</span>
-            </div>
-            <p className="text-4xl font-extrabold text-foreground mb-1 tracking-tight relative z-10">{value}</p>
-            <p className="text-sm text-muted-foreground font-bold relative z-10 uppercase tracking-wider">{label}</p>
-          </motion.div>
-        ))}
-      </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
 
-      {/* Search & Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-        className="bg-white rounded-[2rem] border border-border p-6 mb-8 relative z-20 shadow-sm"
-      >
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search concerts, artists, venues..."
-              className="w-full pl-12 pr-4 py-4 rounded-xl border border-border bg-accent/30 text-foreground placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <select
-                value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-                className="appearance-none px-5 py-4 pr-12 rounded-xl border border-border bg-accent/30 text-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 text-sm font-bold cursor-pointer"
-              >
-                {GENRES.map((g) => (
-                  <option key={g} value={g} className="bg-white text-foreground">{GENRE_EMOJIS[g]} {g}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
-
-            <div className="relative">
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="appearance-none px-5 py-4 pr-12 rounded-xl border border-border bg-accent/30 text-foreground focus:outline-none focus:ring-4 focus:ring-primary/10 text-sm font-bold cursor-pointer"
-              >
-                <option value="All" className="bg-white text-foreground">💰 Any price</option>
-                <option value="under100" className="bg-white text-foreground">Under $100</option>
-                <option value="100-200" className="bg-white text-foreground">$100–$200</option>
-                <option value="over200" className="bg-white text-foreground">Over $200</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-        </div>
-
-        {/* Active filters */}
-        <AnimatePresence>
-          {isFiltered && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="flex items-center flex-wrap gap-2 mt-4 pt-4 border-t border-border"
-            >
-              <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Active filters:</span>
-              {search && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary rounded-full text-xs font-bold">
-                  "{search}"
-                  <button onClick={() => setSearch("")} className="hover:text-foreground transition-colors">✕</button>
-                </span>
-              )}
-              {genre !== "All" && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary rounded-full text-xs font-bold">
-                  {GENRE_EMOJIS[genre]} {genre}
-                  <button onClick={() => setGenre("All")} className="hover:text-foreground transition-colors">✕</button>
-                </span>
-              )}
-              {priceRange !== "All" && (
-                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary rounded-full text-xs font-bold">
-                  💰 {priceRange}
-                  <button onClick={() => setPriceRange("All")} className="hover:text-foreground transition-colors">✕</button>
-                </span>
-              )}
-              <button
-                onClick={() => { setSearch(""); setGenre("All"); setPriceRange("All"); }}
-                className="ml-auto text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
-              >
-                Clear all
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Results header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-8 bg-primary rounded-full shadow-lg shadow-primary/20" />
-          <p className="text-muted-foreground font-medium">
-            <span className="text-foreground font-black text-2xl">{filtered.length}</span>{" "}
-            concerts found
-          </p>
-          {!isFiltered && (
-            <span className="flex items-center gap-1.5 text-xs text-yellow-400 font-medium bg-yellow-400/10 border border-yellow-400/20 px-2.5 py-1 rounded-full">
-              <Zap className="w-3.5 h-3.5" />
-              All shows
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Concert Grid */}
-      {filtered.length === 0 ? (
+        {/* 2. HERO SECTION CTA (INTERAKTIF & MENGAMBANG) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-32 bg-white rounded-[2.5rem] border border-border shadow-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ y: -8, scale: 1.01 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="group relative mb-12 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/10 hover:shadow-primary/30 bg-slate-900 border border-slate-800 transition-shadow duration-500 cursor-default"
         >
-          <div className="w-24 h-24 bg-accent rounded-3xl flex items-center justify-center mx-auto mb-6 border border-border shadow-sm">
-            <Music2 className="w-10 h-10 text-muted-foreground" />
+          {/* Animated Mesh Gradient */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <motion.div animate={{ x: [0, 80, 0], y: [0, -40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-[20%] -left-[10%] w-[50%] h-[70%] bg-fuchsia-600 rounded-full mix-blend-screen blur-[120px] opacity-60 group-hover:scale-110 transition-transform duration-1000" />
+            <motion.div animate={{ x: [0, -80, 0], y: [0, 80, 0] }} transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[10%] right-[0%] w-[60%] h-[80%] bg-indigo-600 rounded-full mix-blend-screen blur-[130px] opacity-60 group-hover:scale-110 transition-transform duration-1000" />
+            <motion.div animate={{ x: [0, 40, 0], y: [0, 40, 0] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }} className="absolute -bottom-[20%] left-[20%] w-[40%] h-[60%] bg-rose-500 rounded-full mix-blend-screen blur-[100px] opacity-40 group-hover:scale-110 transition-transform duration-1000" />
+            <motion.div animate={{ x: [0, -40, 0], y: [0, -40, 0] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-[0%] right-[30%] w-[30%] h-[50%] bg-cyan-400 rounded-full mix-blend-screen blur-[100px] opacity-40 group-hover:scale-110 transition-transform duration-1000" />
+
+            <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[40px]" />
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay group-hover:opacity-20 transition-opacity duration-500" />
           </div>
-          <p className="text-foreground font-black text-2xl mb-2">No concerts found</p>
-          <p className="text-muted-foreground text-sm mb-8 font-medium">Try adjusting your search or filters to find what you're looking for.</p>
-          <button
-            onClick={() => { setSearch(""); setGenre("All"); setPriceRange("All"); }}
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white bg-primary shadow-lg shadow-primary/20 hover:scale-105 text-sm font-bold transition-all"
-          >
-            <Sparkles className="w-4 h-4" />
-            Show all concerts
-          </button>
+
+          {/* Konten Hero */}
+          <div className="relative z-10 p-10 lg:p-14 flex flex-col lg:flex-row items-center justify-between gap-10">
+
+            {/* Kiri: Teks & Typografi */}
+            <div className="w-full lg:w-3/5 text-center lg:text-left">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-[11px] font-black text-white border border-white/10 shadow-lg uppercase tracking-widest mb-6">
+                <Sparkles className="w-3.5 h-3.5 text-fuchsia-300" /> Premium Access
+              </motion.div>
+
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] mb-5 text-white">
+                Ready to rock, <br className="hidden sm:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-200 via-fuchsia-200 to-indigo-200 drop-shadow-sm">
+                  {currentUser?.name?.split(' ')[0] || "Guest"}?
+                </span> 🎸
+              </motion.h1>
+
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-slate-300 text-base sm:text-lg font-medium leading-relaxed max-w-lg mx-auto lg:mx-0 group-hover:text-white transition-colors duration-500">
+                Discover electrifying live events, exclusive presales, and unforgettable moments happening around you.
+              </motion.p>
+            </div>
+
+            {/* Kanan: Dekorasi VIP Ticket yang MENGAMBANG & INTERAKTIF */}
+            <div className="hidden lg:flex w-2/5 justify-end relative perspective-1000">
+
+              <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="relative z-20">
+                <div className="w-64 h-40 rounded-2xl bg-gradient-to-tr from-white/20 to-white/5 backdrop-blur-xl border border-white/30 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] p-6 flex flex-col justify-between -rotate-6 group-hover:rotate-0 group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out">
+                  <div className="flex justify-between items-start">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner group-hover:bg-white/30 transition-colors">
+                      <Ticket className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="px-2 py-1 bg-white/10 rounded text-[10px] font-black text-white uppercase tracking-widest border border-white/10">VIP Pass</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-2 w-3/4 bg-white/30 rounded-full" />
+                    <div className="h-2 w-1/2 bg-white/20 rounded-full" />
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="absolute -right-4 -bottom-6 z-10">
+                <div className="w-64 h-40 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl rotate-6 group-hover:rotate-12 group-hover:translate-x-6 group-hover:translate-y-2 transition-all duration-500 ease-out" />
+              </motion.div>
+
+            </div>
+          </div>
         </motion.div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {paginatedConcerts.map((concert, i) => (
+
+        {/* 3. CONTROLS (Pill Tabs & Search) */}
+        <div className="mb-12">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+
+            {/* Floating Pill Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
+              {CATEGORIES.map((cat) => {
+                const isActive = activeCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`relative px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap outline-none flex-shrink-0 ${isActive ? "text-white" : "text-slate-500 bg-white/80 backdrop-blur-md border border-slate-200 hover:bg-white hover:text-slate-900 shadow-sm"
+                      }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activePillTab"
+                        className="absolute inset-0 bg-slate-900 rounded-full shadow-md"
+                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                    <span className="relative z-10">{cat}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Search Bar & Filter Toggle */}
+            <div className="flex items-center gap-3 w-full lg:w-auto relative">
+              <div className="relative w-full lg:w-80 group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search artists, events..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-white/80 backdrop-blur-md border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none shadow-sm transition-all placeholder:font-medium placeholder:text-slate-400"
+                />
+              </div>
+
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`p-3 rounded-xl border shadow-sm transition-all flex-shrink-0 flex items-center justify-center ${showFilters
+                  ? "bg-slate-900 border-slate-900 text-white shadow-md shadow-slate-900/20"
+                  : "bg-white/80 backdrop-blur-md border-slate-200 text-slate-500 hover:text-primary hover:bg-white"
+                  }`}
+              >
+                <SlidersHorizontal className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Expanded Advanced Filters Panel */}
+          <AnimatePresence>
+            {showFilters && (
               <motion.div
+                initial={{ opacity: 0, height: 0, y: -10, filter: "blur(10px)" }}
+                animate={{ opacity: 1, height: "auto", y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, height: 0, y: -10, filter: "blur(10px)" }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden"
+              >
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 mr-2">
+                    <ArrowDownAz className="w-4 h-4 text-slate-400" />
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Sort By</span>
+                  </div>
+                  {["Newest", "Price: Low to High", "Price: High to Low", "Nearest Date"].map((sortOption) => (
+                    <button
+                      key={sortOption}
+                      onClick={() => setActiveSort(sortOption)}
+                      className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${activeSort === sortOption
+                        ? "bg-slate-900 text-white shadow-md"
+                        : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-white hover:border-slate-300"
+                        }`}
+                    >
+                      {sortOption.includes("Price") ? <DollarSign className="w-3.5 h-3.5" /> : <Calendar className="w-3.5 h-3.5" />}
+                      {sortOption.replace("Price: ", "")}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Clear Filter Button */}
+                {isFiltered && (
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 rounded-lg transition-colors sm:ml-auto"
+                  >
+                    <X className="w-3.5 h-3.5" /> Clear All
+                  </button>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* 4. MASONRY/GRID ANIMATION */}
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <AnimatePresence mode="popLayout">
+            {processedConcerts.map((concert, index) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                transition={{ duration: 0.4, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 key={concert.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.6, ease: "easeOut" }}
+                className="h-full"
               >
                 <ConcertCard concert={concert} />
               </motion.div>
             ))}
-          </div>
+          </AnimatePresence>
 
-          {/* Shadcn-like Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-30 transition-all shadow-sm"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <div className="flex items-center gap-1.5">
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`w-12 h-12 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${currentPage === i + 1
-                      ? "bg-primary text-white shadow-lg shadow-primary/20"
-                      : "border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground"
-                      }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
+          {processedConcerts.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="col-span-full py-32 text-center bg-white/80 backdrop-blur-xl border border-slate-200 rounded-[2.5rem] shadow-sm"
+            >
+              <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-100 shadow-inner">
+                <Search className="w-10 h-10 text-slate-300" />
               </div>
-
+              <h3 className="text-2xl font-black text-slate-900 mb-2">No concerts found</h3>
+              <p className="text-slate-500 font-bold mb-6">We couldn't find anything matching your criteria.</p>
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-white text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-30 transition-all shadow-sm"
+                onClick={clearFilters}
+                className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20"
               >
-                <ChevronRight className="w-5 h-5" />
+                Clear All Filters
               </button>
-            </div>
+            </motion.div>
           )}
-        </>
-      )}
+        </motion.div>
+      </div>
     </PageTransition>
   );
 }

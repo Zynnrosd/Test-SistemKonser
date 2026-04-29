@@ -13,7 +13,6 @@ import { TicketDetailPage } from "./pages/TicketDetailPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { AdminConcertsPage } from "./pages/AdminConcertsPage";
 import { AdminTransactionsPage } from "./pages/AdminTransactionsPage";
-import { DataTablePage } from "./pages/DataTablePage";
 import { FavoritesPage } from "./pages/FavoritesPage";
 import { CartPage } from "./pages/CartPage";
 import { PaymentConfirmPage } from "./pages/PaymentConfirmPage";

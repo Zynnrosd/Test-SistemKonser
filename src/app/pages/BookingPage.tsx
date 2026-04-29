@@ -1,345 +1,246 @@
-import { useState, ReactNode } from "react";
-import { useParams, useNavigate, Link } from "react-router";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  ArrowLeft, Ticket, ChevronRight, Plus, Minus,
-  Calendar, MapPin, Clock, AlertCircle, Check,
-  CreditCard, Smartphone, Building2, Wallet, ShoppingCart,
-} from "lucide-react";
+import { ArrowLeft, Check, Ticket, MapPin, CreditCard, ShieldCheck, Plus, Minus, Wallet, Building2 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { PageTransition } from "../components/PageTransition";
-import { SeatCategory, PaymentMethod } from "../data/mockData";
 
-const SEAT_CATEGORIES: {
+type SeatCategory = "Regular" | "VIP" | "VVIP";
+type PaymentMethod = "Credit Card" | "Debit Card" | "GoPay" | "OVO" | "Dana" | "Bank Transfer";
+
+interface CategoryOption {
   id: SeatCategory;
   label: string;
-  description: string;
-  multiplier: number;
+  priceMultiplier: number;
+  desc: string;
   color: string;
-  border: string;
   bg: string;
-  dot: string;
-}[] = [
-    {
-      id: "Regular",
-      label: "Regular",
-      description: "Standard seating area, great views",
-      multiplier: 1.0,
-      color: "text-gray-700",
-      border: "border-gray-200",
-      bg: "bg-gray-50",
-      dot: "bg-gray-400",
-    },
-    {
-      id: "VIP",
-      label: "VIP",
-      description: "Premium section with better views & lounge access",
-      multiplier: 1.5,
-      color: "text-indigo-700",
-      border: "border-indigo-200",
-      bg: "bg-indigo-50",
-      dot: "bg-indigo-500",
-    },
-    {
-      id: "VVIP",
-      label: "VVIP",
-      description: "Front row, exclusive perks & backstage pass",
-      multiplier: 2.0,
-      color: "text-amber-700",
-      border: "border-amber-200",
-      bg: "bg-amber-50",
-      dot: "bg-amber-500",
-    },
-  ];
+}
 
-const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: ReactNode; type: string }[] = [
-  { id: "Credit Card", label: "Credit Card", icon: <CreditCard className="w-4 h-4" />, type: "Card" },
-  { id: "Debit Card", label: "Debit Card", icon: <CreditCard className="w-4 h-4" />, type: "Card" },
-  { id: "GoPay", label: "GoPay", icon: <Smartphone className="w-4 h-4" />, type: "E-Wallet" },
-  { id: "OVO", label: "OVO", icon: <Smartphone className="w-4 h-4" />, type: "E-Wallet" },
-  { id: "Dana", label: "Dana", icon: <Wallet className="w-4 h-4" />, type: "E-Wallet" },
-  { id: "Bank Transfer", label: "Bank Transfer", icon: <Building2 className="w-4 h-4" />, type: "Bank" },
+const CATEGORIES: CategoryOption[] = [
+  { id: "Regular", label: "Regular Seat", priceMultiplier: 1, desc: "Standard viewing experience.", color: "text-slate-600", bg: "bg-slate-50" },
+  { id: "VIP", label: "VIP Access", priceMultiplier: 1.5, desc: "Premium view with dedicated entrance.", color: "text-primary", bg: "bg-primary/5" },
+  { id: "VVIP", label: "VVIP Lounge", priceMultiplier: 2.5, desc: "Front row, lounge access & merch.", color: "text-fuchsia-500", bg: "bg-fuchsia-500/5" },
+];
+
+const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: any; desc: string }[] = [
+  { id: "Credit Card", label: "Credit / Debit Card", icon: CreditCard, desc: "Visa, Mastercard, JCB" },
+  { id: "Bank Transfer", label: "Virtual Account", icon: Building2, desc: "Instant confirmation" },
+  { id: "GoPay", label: "E-Wallet", icon: Wallet, desc: "GoPay, OVO, Dana" },
 ];
 
 export function BookingPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { getConcert, bookTicket } = useData();
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
 
-  const concert = getConcert(id!);
-  const [quantity, setQuantity] = useState(1);
-  const [seatCategory, setSeatCategory] = useState<SeatCategory>("Regular");
+  const concert = getConcert(id || "");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [category, setCategory] = useState<CategoryOption>(CATEGORIES[0]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("Credit Card");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  if (!concert) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <p className="text-gray-500">Concert not found.</p>
-        <button onClick={() => navigate("/dashboard")} className="mt-4 text-indigo-600 text-sm hover:underline">
-          Back to Dashboard
-        </button>
-      </div>
-    );
-  }
+  if (!concert) return null;
 
-  const selectedTier = SEAT_CATEGORIES.find((c) => c.id === seatCategory)!;
-  const basePrice = concert.price * selectedTier.multiplier;
-  const total = basePrice * quantity;
-  const serviceFee = total * 0.05;
-  const grandTotal = total + serviceFee;
+  const handleIncrement = () => setQuantity(prev => prev + 1);
+  const handleDecrement = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  const handleQuantityChange = (delta: number) => {
-    const next = quantity + delta;
-    if (next >= 1 && next <= Math.min(8, concert.availableSeats)) setQuantity(next);
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseInt(e.target.value);
+    if (!isNaN(val) && val >= 1) {
+      setQuantity(val);
+    } else if (e.target.value === "") {
+      setQuantity(0);
+    }
   };
 
-  const handleAddToCart = async () => {
+  const safeQuantity = quantity || 1;
+  const unitPrice = concert.price * category.priceMultiplier;
+  const subtotal = unitPrice * safeQuantity;
+  const fees = subtotal * 0.05;
+  const total = subtotal + fees;
+
+  const handleBooking = () => {
     if (!currentUser) return;
-    setError("");
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    const result = bookTicket(currentUser.id, concert.id, quantity, seatCategory, paymentMethod);
-    setLoading(false);
-    if (result.success && result.ticketId) {
-      navigate("/cart");
-    } else {
-      setError(result.message);
+    try {
+      const result = bookTicket(
+        currentUser.id,
+        concert.id,
+        safeQuantity,
+        total,
+        category.id,
+        paymentMethod
+      );
+      if (result.success) {
+        navigate(`/payment/${result.ticketId}`);
+      }
+    } catch (error) {
+      console.error("Booking failed:", error);
     }
   };
 
   return (
-    <PageTransition className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8 font-medium">
-        <Link to={`/concerts/${concert.id}`} className="hover:text-primary transition-colors flex items-center gap-1.5">
-          <ArrowLeft className="w-4 h-4" />
-          {concert.title}
-        </Link>
-        <ChevronRight className="w-4 h-4 text-border" />
-        <span className="text-foreground font-bold">Book Tickets</span>
+    <PageTransition className="relative min-h-screen bg-slate-50 pb-32 font-sans text-slate-900 selection:bg-primary/20 overflow-x-hidden">
+
+      {/* 1. AURA BACKGROUND (DENGAN GRADASI PENUTUP ATAS & BAWAH) */}
+      <div className="absolute top-0 left-0 w-full h-[100vh] pointer-events-none z-0 overflow-hidden">
+        {/* Lingkaran Aura */}
+        <div className="absolute top-[-5%] left-[-5%] w-[50vw] h-[50vw] bg-fuchsia-500/10 blur-[120px] rounded-full mix-blend-multiply opacity-80" />
+        <div className="absolute top-[-5%] right-[-5%] w-[50vw] h-[50vw] bg-cyan-400/10 blur-[120px] rounded-full mix-blend-multiply opacity-80" />
+        <div className="absolute top-[20%] left-[25%] w-[50vw] h-[50vw] bg-primary/10 blur-[120px] rounded-full mix-blend-multiply opacity-60" />
+
+        {/* MASKING ATAS: Memudarkan potongan kasar di ujung atas browser */}
+        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-slate-50 to-transparent" />
+
+        {/* MASKING BAWAH: Memudarkan aura agar menyatu halus ke warna polos halaman di bagian bawah */}
+        <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-b from-transparent to-slate-50" />
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-6">
-        {/* Left: Concert info */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-[2rem] border border-border shadow-sm overflow-hidden sticky top-28">
-            <div className="relative h-48">
-              <img src={concert.image} alt={concert.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            </div>
-            <div className="p-8">
-              <h2 className="text-foreground font-black text-xl mb-1">{concert.title}</h2>
-              <p className="text-primary text-sm font-bold mb-6">{concert.artist}</p>
-              <div className="space-y-3">
-                <SummaryRow icon={<Calendar className="w-4 h-4" />} text={concert.date} />
-                <SummaryRow icon={<Clock className="w-4 h-4" />} text={concert.time} />
-                <SummaryRow icon={<MapPin className="w-4 h-4" />} text={`${concert.venue}, ${concert.city}`} />
-                <SummaryRow icon={<Ticket className="w-4 h-4" />} text={`${concert.availableSeats} seats remaining`} />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
 
-        {/* Right: Booking form */}
-        <div className="lg:col-span-3 space-y-4">
-          {/* Step 1: Seat Category */}
-          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
-            <h3 className="text-foreground font-black text-lg mb-6">1. Choose seat category</h3>
-            <div className="space-y-2.5">
-              {SEAT_CATEGORIES.map((cat) => {
-                const isSelected = seatCategory === cat.id;
-                const catPrice = concert.price * cat.multiplier;
-                return (
-                  <motion.button
-                    key={cat.id}
-                    onClick={() => setSeatCategory(cat.id)}
-                    whileTap={{ scale: 0.99 }}
-                    className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all ${isSelected
-                        ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
-                        : "border-accent hover:border-primary/30 hover:bg-accent/50"
-                      }`}
-                  >
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${isSelected ? `${cat.border} ${cat.bg}` : "border-gray-300"
-                      }`}>
-                      {isSelected && <div className={`w-2 h-2 rounded-full ${cat.dot}`} />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-sm font-black ${isSelected ? "text-primary" : "text-foreground"}`}>
-                          {cat.label}
-                        </span>
-                        {cat.id === "VIP" && (
-                          <span className="text-[10px] px-2 py-0.5 bg-primary text-white rounded-full font-bold uppercase tracking-wider shadow-sm">Popular</span>
-                        )}
-                        {cat.id === "VVIP" && (
-                          <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-600 rounded-full border border-amber-200 font-bold uppercase tracking-wider">Premium</span>
-                        )}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors mb-8 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full w-fit border border-white shadow-sm hover:shadow-md"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Event
+        </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+          <div className="lg:col-span-7 xl:col-span-8 space-y-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">Complete Your Order</h1>
+              <p className="text-slate-500 font-medium">Secure your spot in 3 simple steps.</p>
+            </motion.div>
+
+            {/* Kategori */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-200/60 pb-2">
+                <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs shadow-md">1</div>
+                <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest">Select Category</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {CATEGORIES.map((cat) => {
+                  const isSelected = category.id === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setCategory(cat)}
+                      className={`relative p-5 rounded-[1.5rem] text-left transition-all duration-300 border-2 overflow-hidden ${isSelected ? "border-slate-900 bg-white shadow-lg scale-[1.02]" : "border-white bg-white/60 backdrop-blur-xl hover:bg-white hover:border-slate-200"}`}
+                    >
+                      <AnimatePresence>
+                        {isSelected && <motion.div layoutId="category-bg" className={`absolute inset-0 ${cat.bg} z-0`} transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
+                      </AnimatePresence>
+                      <div className="relative z-10">
+                        <div className="flex justify-between items-start mb-3">
+                          <p className={`font-black uppercase tracking-widest text-[10px] ${isSelected ? cat.color : "text-slate-400"}`}>{cat.label}</p>
+                          {isSelected && (
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className={`w-4 h-4 rounded-full flex items-center justify-center text-white bg-slate-900`}>
+                              <Check className="w-2.5 h-2.5" />
+                            </motion.div>
+                          )}
+                        </div>
+                        <p className="text-2xl font-black text-slate-900 mb-1.5">${(concert.price * cat.priceMultiplier).toFixed(2)}</p>
+                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed">{cat.desc}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground font-medium">{cat.description}</p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <p className={`text-base font-black ${isSelected ? "text-primary" : "text-foreground"}`}>
-                        ${catPrice.toFixed(2)}
-                      </p>
-                      {cat.multiplier > 1 && (
-                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{cat.multiplier}× base</p>
-                      )}
-                    </div>
-                    {isSelected && <Check className="w-5 h-5 flex-shrink-0 text-primary" />}
-                  </motion.button>
-                );
-              })}
-            </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+
+            {/* Kuantitas */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-200/60 pb-2">
+                <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs shadow-md">2</div>
+                <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest">Number of Tickets</h2>
+              </div>
+              <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[1.5rem] p-4 shadow-sm inline-flex items-center gap-6">
+                <button onClick={handleDecrement} className="w-10 h-10 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 hover:border-slate-400 transition-all shadow-sm active:scale-95"><Minus className="w-4 h-4" /></button>
+                <div className="flex flex-col items-center min-w-[60px]">
+                  <input type="number" value={quantity === 0 ? "" : quantity} onChange={handleQuantityChange} className="w-16 text-center text-3xl font-black text-slate-900 bg-transparent outline-none focus:ring-0" />
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Seats</span>
+                </div>
+                <button onClick={handleIncrement} className="w-10 h-10 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 hover:border-slate-400 transition-all shadow-sm active:scale-95"><Plus className="w-4 h-4" /></button>
+              </div>
+            </motion.div>
+
+            {/* Metode Pembayaran */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-200/60 pb-2">
+                <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs shadow-md">3</div>
+                <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest">Payment Method</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {PAYMENT_METHODS.map((method) => {
+                  const isSelected = paymentMethod === method.id;
+                  return (
+                    <button
+                      key={method.id}
+                      onClick={() => setPaymentMethod(method.id)}
+                      className={`relative flex flex-col items-start p-5 rounded-[1.5rem] border-2 transition-all duration-300 overflow-hidden ${isSelected ? "border-slate-900 bg-white shadow-lg scale-[1.02]" : "border-white bg-white/60 backdrop-blur-xl hover:bg-white hover:border-slate-200 shadow-sm"}`}
+                    >
+                      <AnimatePresence>
+                        {isSelected && <motion.div layoutId="payment-bg" className="absolute inset-0 bg-slate-50 z-0" transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
+                      </AnimatePresence>
+                      <div className="relative z-10 w-full">
+                        <div className="flex items-center justify-between mb-3 w-full">
+                          <div className={`p-2.5 rounded-xl ${isSelected ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"}`}><method.icon className="w-5 h-5" /></div>
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-slate-900" : "border-slate-300"}`}>
+                            {isSelected && <div className="w-2 h-2 bg-slate-900 rounded-full" />}
+                          </div>
+                        </div>
+                        <p className={`font-black text-sm mb-0.5 ${isSelected ? "text-slate-900" : "text-slate-700"}`}>{method.label}</p>
+                        <p className="text-[10px] text-slate-500 font-bold">{method.desc}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
           </div>
 
-          {/* Step 2: Quantity */}
-          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
-            <h3 className="text-foreground font-black text-lg mb-6">2. Number of tickets</h3>
-            <div className="flex items-center justify-between p-4 bg-accent rounded-2xl">
-              <div>
-                <p className="text-sm font-bold text-foreground">{seatCategory}</p>
-                <p className="text-xs text-muted-foreground font-medium">${(concert.price * selectedTier.multiplier).toFixed(2)} per ticket</p>
+          {/* Sticky Summary */}
+          <div className="lg:col-span-5 xl:col-span-4 relative">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="sticky top-24 bg-white/90 backdrop-blur-3xl rounded-[2rem] border border-white shadow-2xl shadow-slate-200/50 overflow-hidden">
+              <div className="relative h-40 w-full">
+                <img src={concert.image} alt="Concert" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5">
+                  <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">{concert.artist}</p>
+                  <h3 className="text-xl font-bold text-white leading-tight truncate">{concert.title}</h3>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                  className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
-                >
-                  <Minus className="w-3.5 h-3.5" />
+              <div className="p-7 space-y-5 bg-white/50">
+                <div className="flex items-start gap-3 pb-5 border-b border-slate-100">
+                  <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <p className="text-sm font-bold text-slate-600 leading-relaxed">{concert.venue}, {concert.city}</p>
+                </div>
+                <div className="flex justify-between items-center text-sm text-slate-600 font-medium">
+                  <span>{category.label} <span className="font-bold text-slate-900">× {safeQuantity}</span></span>
+                  <span className="font-bold text-slate-900">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs text-slate-500 font-bold">
+                  <span>Taxes & Fees (5%)</span>
+                  <span>${fees.toFixed(2)}</span>
+                </div>
+                <div className="pt-5 border-t border-slate-100">
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Due</span>
+                    <span className="text-3xl font-black text-slate-900 tracking-tighter">${total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-7 pt-0 bg-white/50">
+                <button onClick={handleBooking} className="w-full flex items-center justify-center gap-2 py-4 bg-slate-900 text-white font-black rounded-xl shadow-xl shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-1 transition-all active:scale-95 text-sm group">
+                  <ShieldCheck className="w-5 h-5 group-hover:scale-110 transition-transform" /> Confirm & Pay
                 </button>
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={quantity}
-                    initial={{ scale: 0.7, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.7, opacity: 0 }}
-                    transition={{ duration: 0.12 }}
-                    className="w-10 text-center text-foreground font-black text-xl"
-                  >
-                    {quantity}
-                  </motion.span>
-                </AnimatePresence>
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= Math.min(8, concert.availableSeats)}
-                  className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                <p className="text-center text-[9px] text-slate-400 font-bold mt-4 flex items-center justify-center gap-1.5 uppercase tracking-widest">Secure Enterprise Checkout</p>
               </div>
-            </div>
-            <p className="text-[10px] text-muted-foreground text-center mt-3 font-bold uppercase tracking-widest">Max 8 tickets per transaction</p>
-          </div>
-
-          {/* Step 3: Payment Method */}
-          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
-            <h3 className="text-foreground font-black text-lg mb-6">3. Payment method</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {PAYMENT_METHODS.map((method) => {
-                const isSelected = paymentMethod === method.id;
-                return (
-                  <motion.button
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    whileTap={{ scale: 0.97 }}
-                    className={`flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all ${isSelected
-                        ? "border-primary bg-primary/5 shadow-md shadow-primary/5"
-                        : "border-accent hover:border-primary/30 hover:bg-accent/50"
-                      }`}
-                  >
-                    <span className={isSelected ? "text-primary" : "text-muted-foreground"}>
-                      {method.icon}
-                    </span>
-                    <div>
-                      <p className={`text-xs font-bold ${isSelected ? "text-primary" : "text-foreground"}`}>{method.label}</p>
-                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{method.type}</p>
-                    </div>
-                    {isSelected && (
-                      <Check className="w-4 h-4 text-primary ml-auto" />
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Step 4: Order summary + CTA */}
-          <div className="bg-white rounded-[2rem] border border-border shadow-sm p-8">
-            <h3 className="text-foreground font-black text-lg mb-6">4. Order summary</h3>
-            <div className="space-y-3 mb-6">
-              <PriceRow label={`${seatCategory} × ${quantity}`} value={total} />
-              <PriceRow label="Service fee (5%)" value={serviceFee} />
-              <div className="pt-4 border-t border-border">
-                <PriceRow label="Total Amount" value={grandTotal} bold />
-              </div>
-            </div>
-
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="flex items-center gap-2 mb-3 p-3 bg-red-50 border border-red-100 rounded-xl text-red-500 text-sm"
-                >
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              onClick={handleAddToCart}
-              disabled={loading}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-white font-black bg-primary shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all disabled:opacity-60"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Adding to cart...
-                </span>
-              ) : (
-                <>
-                  <ShoppingCart className="w-4 h-4" />
-                  Add to Cart · ${grandTotal.toFixed(2)}
-                </>
-              )}
-            </motion.button>
-
-            <p className="text-[10px] text-muted-foreground text-center mt-4 font-bold uppercase tracking-widest">
-              Tickets reserved for 24 hours after booking
-            </p>
+            </motion.div>
           </div>
         </div>
       </div>
     </PageTransition>
-  );
-}
-
-function SummaryRow({ icon, text }: { icon: ReactNode; text: string }) {
-  return (
-    <div className="flex items-center gap-3 text-muted-foreground">
-      <span className="text-primary/70">{icon}</span>
-      <span className="text-sm font-medium">{text}</span>
-    </div>
-  );
-}
-
-function PriceRow({ label, value, bold = false }: { label: string; value: number; bold?: boolean }) {
-  return (
-    <div className={`flex justify-between items-center ${bold ? "text-foreground" : "text-muted-foreground"}`}>
-      <span className={`${bold ? "text-base font-black" : "text-sm font-bold uppercase tracking-wider"}`}>{label}</span>
-      <span className={`${bold ? "text-2xl font-black text-primary" : "text-sm font-bold"}`}>${value.toFixed(2)}</span>
-    </div>
   );
 }

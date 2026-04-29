@@ -13,8 +13,10 @@ export function RegisterPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // LOGIKA DIPERBAIKI: Jika register berhasil, arahkan ke halaman login
     if (register(name, email, password)) {
-      navigate("/dashboard");
+      navigate("/login");
     }
   };
 

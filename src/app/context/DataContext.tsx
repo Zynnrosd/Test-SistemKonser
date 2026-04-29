@@ -15,6 +15,7 @@ interface DataContextType {
     userId: string,
     concertId: string,
     quantity: number,
+    totalPrice: number,
     seatCategory: SeatCategory,
     paymentMethod: PaymentMethod
   ) => { success: boolean; message: string; ticketId?: string };
@@ -96,6 +97,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       userId: string,
       concertId: string,
       quantity: number,
+      totalPrice: number,
       seatCategory: SeatCategory,
       paymentMethod: PaymentMethod
     ) => {
@@ -106,8 +108,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (concert.availableSeats < quantity)
         return { success: false, message: `Only ${concert.availableSeats} seats available.` };
 
-      const multiplier = seatCategory === "VVIP" ? 2.0 : seatCategory === "VIP" ? 1.5 : 1.0;
-      const totalPrice = concert.price * multiplier * quantity;
       const ticketId = `t${Date.now()}`;
 
       const nowIso = new Date().toISOString();

@@ -1,12 +1,77 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import { ArrowRight, Ticket, Star, Sparkles, CalendarDays, PlayCircle, Mic2, Users2, Trophy } from "lucide-react";
+import { ArrowRight, Ticket, Sparkles, CalendarDays, Mic2, Users2, Trophy, Search, ShieldCheck, Zap } from "lucide-react";
 import { Link } from "react-router";
 import { useData } from "../context/DataContext";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+// Impor Footer yang konsisten
+import { Footer } from "../components/Footer";
+
+// Variants untuk Animasi Stagger Grid yang lebih Mulus (Tanpa Bouncing/Spring)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.2 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    // TAMBAHKAN `as const` DI SINI
+    transition: { duration: 1, ease: [0.16, 1, 0.3, 1] as const }
+  }
+};
+
+// Variants untuk Reveal Teks Per Kata (Efek Blur Reveal ala Vercel)
+const quoteVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08, // Jeda antar kata dipercepat sedikit agar mengalir
+      delayChildren: 0.1
+    },
+  },
+};
+
+const wordVariants = {
+  hidden: { opacity: 0, y: 40, filter: "blur(12px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 1.2,
+      // TAMBAHKAN `as const` DI SINI
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
 
 export function LandingPage() {
   const { concerts } = useData();
   const featuredConcerts = concerts.slice(0, 3);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Judul utama yang akan dipisahkan menjadi kata-kata
+  const titleString = "Unlock the Ultimate Concert Experience.";
+  const titleWords = titleString.split(" ");
+
+  // Deteksi Scroll untuk Navbar
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToFeatures = () => {
+    featuresRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -14,194 +79,223 @@ export function LandingPage() {
     offset: ["start start", "end end"]
   });
 
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const opacityHero = useTransform(scrollYProgress, [0, 0.25], [1, 0]);
-  const scaleHero = useTransform(scrollYProgress, [0, 0.25], [1, 0.95]);
+  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-slate-50 text-foreground overflow-hidden font-sans">
-      {/* Latar Belakang Enterprise (Lebih Bersih) */}
+    // PERBAIKAN 1: overflow-hidden diubah jadi overflow-x-hidden agar Footer tidak terpotong di bawah
+    <div ref={containerRef} className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-primary/20 overflow-x-hidden">
+
+      {/* Background Parallax */}
       <motion.div style={{ y: yBg }} className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-0 w-full h-[70vh] bg-gradient-to-b from-primary/5 to-transparent" />
+        <div className="absolute inset-0 bg-white" />
+        <div className="absolute top-[10%] left-[10%] w-[100vw] h-[400px] bg-primary/10 blur-[160px] rounded-full" />
+        <div className="absolute top-[10%] left-[50%] w-[100vw] h-[400px] bg-fuchsia-500/10 blur-[160px] rounded-full" />
       </motion.div>
 
-      {/* Navbar Landing Page */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4 transition-all duration-500">
-        <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/80 backdrop-blur-md border border-border/50 rounded-2xl px-6 py-3 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/20">
+      {/* Floating Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 transition-all duration-300">
+        <motion.div
+          animate={{
+            width: isScrolled ? "90%" : "100%",
+            maxWidth: isScrolled ? "1100px" : "1280px",
+            y: isScrolled ? 10 : 0
+          }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} // Navbar juga dibuat mulus animasinya
+          className={`mx-auto flex items-center justify-between px-6 py-3 rounded-2xl border transition-all duration-500 ${isScrolled
+            ? "bg-white/70 backdrop-blur-xl border-slate-200/60 shadow-lg shadow-slate-200/20"
+            : "bg-transparent border-transparent"
+            }`}
+        >
+          <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-105 transition-transform duration-500">
               <Ticket className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-extrabold tracking-tight">Concert<span className="text-primary">Hub</span></span>
+            <span className="text-xl font-extrabold tracking-tight text-slate-900">Concert<span className="text-primary">Hub</span></span>
           </div>
-          <div className="flex items-center gap-6">
-            <Link to="/login" className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primary/90 transition-all active:scale-95"
-            >
+          <div className="flex items-center gap-4 sm:gap-8">
+            <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors">Sign In</Link>
+            <Link to="/register" className="px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300">
               Get Started
             </Link>
           </div>
-        </div>
+        </motion.div>
       </nav>
 
       {/* Hero Section */}
-      <header className="relative z-10 pt-40 pb-24">
-        <motion.div
-          style={{ opacity: opacityHero, scale: scaleHero }}
-          className="flex flex-col items-center text-center max-w-5xl mx-auto px-6 mb-32"
-        >
+      <header className="relative z-10 pt-40 pb-20 md:pt-48 md:pb-24 lg:pt-40 lg:pb-32 min-h-[80vh] flex items-center">
+        <motion.div style={{ opacity: opacityHero }} className="flex flex-col items-center text-center max-w-6xl mx-auto px-6">
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl md:text-8xl font-extrabold tracking-tight leading-[1.1] mb-8"
+            variants={quoteVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[1.05] mb-10 text-slate-900"
           >
-            Experience Live Music <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-fuchsia-500">
-              Like Never Before.
-            </span>
+            {titleWords.map((word, index) => (
+              <motion.span
+                key={index}
+                variants={wordVariants}
+                style={{ display: "inline-block", marginRight: "0.25em" }}
+                className="origin-center"
+              >
+                {word === "Ultimate" ? (
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-fuchsia-500 pb-2">
+                    Ultimate
+                  </span>
+                ) : (
+                  word
+                )}
+              </motion.span>
+            ))}
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-12 leading-relaxed font-medium"
+            initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="text-lg md:text-xl text-slate-500 max-w-3xl mb-14 font-medium leading-relaxed"
           >
-            The world's most trusted ticketing platform. Secure your spot at the biggest global tours with our seamless booking experience.
+            Access exclusive pre-sales, premium VIP seating, and instant digital entry for the world's most anticipated tours.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col sm:flex-row gap-4"
+            initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1.2, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col sm:flex-row gap-6"
           >
             <Link
               to="/dashboard"
-              className="px-8 py-4 rounded-xl bg-primary text-white font-semibold flex items-center justify-center gap-3 shadow-md hover:shadow-lg transition-all active:scale-95"
+              className="px-8 py-4 rounded-2xl bg-primary text-white font-bold flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
             >
+              <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform duration-500" />
               Explore Events
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-500" />
             </Link>
-            <button className="px-8 py-4 rounded-xl bg-white border border-border text-foreground font-semibold flex items-center justify-center gap-3 hover:bg-slate-50 transition-all">
-              <PlayCircle className="w-5 h-5" />
-              Watch Demo
+
+            <button
+              onClick={scrollToFeatures}
+              className="px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold flex items-center justify-center gap-3 shadow-sm hover:bg-slate-50 hover:border-primary/20 hover:-translate-y-1 transition-all duration-300"
+            >
+              <Zap className="w-5 h-5 text-primary" />
+              View Features
             </button>
           </motion.div>
         </motion.div>
-
-        {/* Stats Section */}
-        <div className="max-w-7xl mx-auto px-6 mb-40">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { label: "Tickets Sold", val: "2M+", icon: Trophy },
-              { label: "Active Events", val: "450+", icon: Mic2 },
-              { label: "Happy Fans", val: "1.2M", icon: Users2 },
-              { label: "Partner Venues", val: "85+", icon: CalendarDays },
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white p-8 rounded-2xl border border-border shadow-sm flex flex-col items-center"
-              >
-                <div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center mb-4">
-                  <s.icon className="w-6 h-6 text-primary" />
-                </div>
-                <p className="text-3xl font-extrabold text-foreground mb-1">{s.val}</p>
-                <p className="text-sm font-medium text-muted-foreground">{s.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Featured Section */}
-        <div className="max-w-7xl mx-auto px-6 mb-40">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
-            <div className="max-w-xl">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Featured Lineup</h2>
-              <p className="text-muted-foreground text-lg">Secure tickets to the most anticipated tours of the season.</p>
-            </div>
-            <Link to="/dashboard" className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-2 group">
-              View All Events <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredConcerts.map((concert, i) => (
-              <motion.div
-                key={concert.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="group relative rounded-2xl overflow-hidden shadow-md bg-white"
-              >
-                <div className="relative h-80 overflow-hidden">
-                  <img src={concert.image} alt={concert.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-
-                  <div className="absolute top-4 right-4">
-                    <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
-                      <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                      <span className="text-foreground text-xs font-bold">Trending</span>
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <p className="text-xs font-bold text-primary mb-1">{concert.artist}</p>
-                    <h3 className="text-2xl font-bold text-white mb-4 line-clamp-1">{concert.title}</h3>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white/70 text-xs mb-0.5">Starting At</p>
-                        <p className="text-xl font-bold text-white">${concert.price}</p>
-                      </div>
-                      <Link
-                        to={`/concert/${concert.id}`}
-                        className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors"
-                      >
-                        <ArrowRight className="w-5 h-5" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Enterprise CTA Showcase */}
-        <div className="max-w-7xl mx-auto px-6 pb-20">
-          <div className="p-16 md:p-24 rounded-3xl bg-slate-900 relative overflow-hidden text-center border border-slate-800 shadow-2xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-[100px] pointer-events-none" />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="relative z-10"
-            >
-              <h2 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6">Ready for the Next Show?</h2>
-              <p className="text-slate-300 text-lg max-w-2xl mx-auto mb-10">Join millions of fans. Create an account to get access to exclusive presales, premium seating, and fast-track checkout.</p>
-              <Link
-                to="/register"
-                className="inline-flex px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:bg-primary/90 transition-colors shadow-lg"
-              >
-                Create an Account
-              </Link>
-            </motion.div>
-          </div>
-        </div>
       </header>
+
+      {/* Features Section */}
+      <section ref={featuresRef} className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          <FeatureCard
+            icon={<Search className="w-6 h-6" />}
+            title="Smart Discovery"
+            desc="AI-powered recommendations based on your favorite artists and genres."
+          />
+          <FeatureCard
+            icon={<ShieldCheck className="w-6 h-6" />}
+            title="Secure Booking"
+            desc="Enterprise-grade encryption and anti-fraud systems for every transaction."
+          />
+          <FeatureCard
+            icon={<Zap className="w-6 h-6" />}
+            title="Instant Entry"
+            desc="No more paper tickets. Just scan your digital pass and enjoy the show."
+          />
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 mb-24 md:mb-32">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          <StatBox label="Tickets Sold" value="2.4M" icon={<Trophy />} />
+          <StatBox label="Active Events" value="500+" icon={<Mic2 />} />
+          <StatBox label="Happy Fans" value="1.2M" icon={<Users2 />} />
+          <StatBox label="Global Venues" value="120+" icon={<CalendarDays />} />
+        </motion.div>
+      </div>
+
+      {/* Featured Section */}
+      {/* PERBAIKAN 2: pb-48 dikurangi jadi pb-24 agar Footer tidak terlalu jauh jaraknya */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24 md:pb-32">
+        <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
+          <div className="max-w-xl">
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Featured Tours</h2>
+            <p className="text-slate-500 text-lg font-medium">Don't miss out on this season's headliners.</p>
+          </div>
+          <Link to="/dashboard" className="group flex items-center gap-2 text-sm font-bold text-primary">
+            View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {featuredConcerts.map((concert, i) => (
+            <motion.div
+              key={concert.id}
+              initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.15, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative h-[450px] rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 cursor-pointer"
+            >
+              <img src={concert.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent transition-opacity duration-500 group-hover:opacity-90" />
+              <div className="absolute bottom-8 left-8 right-8 transform transition-transform duration-500 group-hover:-translate-y-2">
+                <p className="text-xs font-black text-primary uppercase tracking-widest mb-2">{concert.artist}</p>
+                <h3 className="text-2xl font-bold text-white mb-6 leading-tight">{concert.title}</h3>
+                <Link to={`/concerts/${concert.id}`} className="inline-flex items-center gap-2 text-white font-bold group/btn">
+                  Get Tickets <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform duration-300" />
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* PERBAIKAN 3: Footer dibungkus div relative z-50 dan diberi background agar pasti muncul */}
+      <div className="relative z-50 bg-white border-t border-slate-200">
+        <Footer />
+      </div>
+
     </div>
+  );
+}
+
+function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
+  return (
+    <motion.div
+      variants={itemVariants}
+      whileHover={{ y: -8, backgroundColor: "rgba(255,255,255,1)", boxShadow: "0 20px 40px -15px rgba(0,0,0,0.05)" }}
+      className="p-10 rounded-[2rem] border border-slate-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-500"
+    >
+      <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 border border-primary/10">
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
+      <p className="text-slate-500 font-medium leading-relaxed">{desc}</p>
+    </motion.div>
+  );
+}
+
+function StatBox({ label, value, icon }: { label: string, value: string, icon: any }) {
+  return (
+    <motion.div variants={itemVariants} className="text-center p-8 bg-transparent hover:bg-white/50 rounded-3xl transition-colors duration-500">
+      <div className="text-primary mb-4 flex justify-center opacity-40">{icon}</div>
+      <p className="text-4xl font-extrabold text-slate-900 mb-2">{value}</p>
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{label}</p>
+    </motion.div>
   );
 }
