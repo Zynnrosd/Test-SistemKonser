@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import {
-  LayoutDashboard, Music2, TrendingUp, Database,
-  LogOut, Shield, User, Settings
+  LayoutDashboard, Music2, TrendingUp,
+  LogOut, Shield
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,11 +10,11 @@ export function AdminSidebar() {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
 
+  // Menghapus entry Logs Database / System Database
   const menuItems = [
     { to: "/admin", label: "Overview", icon: LayoutDashboard },
     { to: "/admin/concerts", label: "Manage Concerts", icon: Music2 },
     { to: "/admin/transactions", label: "Transactions", icon: TrendingUp },
-    { to: "/admin/data-table", label: "Logs Database", icon: Database },
   ];
 
   const handleLogout = () => {
@@ -24,7 +24,6 @@ export function AdminSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 flex flex-col z-50">
-      {/* Bagian Atas: Logo (Pengganti Navbar) */}
       <div className="p-6 border-b border-slate-50">
         <Link to="/admin" className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/20">
@@ -36,7 +35,6 @@ export function AdminSidebar() {
         </Link>
       </div>
 
-      {/* Bagian Tengah: Navigasi Utama */}
       <nav className="flex-1 p-4 space-y-1">
         <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Main Menu</p>
         {menuItems.map((item) => {
@@ -57,7 +55,7 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Bagian Bawah: Profil & Logout (Karena Navbar Dihapus) */}
+      {/* Bagian Bawah: Hanya Info Identitas & Logout */}
       <div className="p-4 border-t border-slate-100 bg-slate-50/50">
         <div className="flex items-center gap-3 px-2 mb-4">
           <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">
@@ -71,19 +69,13 @@ export function AdminSidebar() {
           </div>
         </div>
 
-        <div className="space-y-1">
-          <Link to="/profile" className="flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-white hover:shadow-sm transition-all">
-            <User className="w-4 h-4 text-slate-400" />
-            My Profile
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 transition-all border border-transparent hover:border-rose-100"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out System
+        </button>
       </div>
     </aside>
   );

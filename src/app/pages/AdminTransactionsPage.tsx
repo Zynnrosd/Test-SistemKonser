@@ -1,368 +1,114 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import {
-  Search, CreditCard, TrendingUp, DollarSign, Users,
-  Trash2, AlertTriangle, X, ChevronDown,
-} from "lucide-react";
+import { Search, Filter, Download, ArrowUpRight } from "lucide-react";
 import { useData } from "../context/DataContext";
-import { USERS } from "../data/mockData";
 import { StatusBadge } from "../components/StatusBadge";
-import { PageTransition } from "../components/PageTransition";
-
-type FilterStatus = "all" | "booked" | "attended" | "cancelled" | "pending";
-
-const STATUS_COLORS: Record<string, string> = {
-  all: "text-gray-600",
-  booked: "text-indigo-600",
-  attended: "text-emerald-600",
-  cancelled: "text-red-500",
-  pending: "text-amber-600",
-};
+import { motion } from "motion/react";
+import { useState } from "react";
 
 export function AdminTransactionsPage() {
-  const { tickets, concerts, clearTransactions } = useData();
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<FilterStatus>("all");
-  const [concertFilter, setConcertFilter] = useState<string>("all");
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [cleared, setCleared] = useState(false);
+  const { tickets, concerts } = useData();
+  const [filterConcert, setFilterConcert] = useState("all");
 
-  const enriched = tickets.map((ticket) => {
-    const user = USERS.find((u) => u.id === ticket.userId);
-    const concert = concerts.find((c) => c.id === ticket.concertId);
-    return { ticket, user, concert };
-  });
-
-  const filtered = enriched.filter(({ ticket, user, concert }) => {
-    const matchStatus = filter === "all" || ticket.status === filter;
-    const matchConcert = concertFilter === "all" || ticket.concertId === concertFilter;
-    const query = search.toLowerCase();
-    const matchSearch =
-      !query ||
-      user?.name?.toLowerCase().includes(query) ||
-      user?.email?.toLowerCase().includes(query) ||
-      concert?.title?.toLowerCase().includes(query) ||
-      ticket.id.toLowerCase().includes(query);
-    return matchStatus && matchConcert && matchSearch;
-  });
-
-  const totalRevenue = enriched
-    .filter(({ ticket }) => ticket.status === "booked" || ticket.status === "attended")
-    .reduce((s, { ticket }) => s + ticket.totalPrice, 0);
-  const totalTickets = enriched
-    .filter(({ ticket }) => ticket.status === "booked" || ticket.status === "attended")
-    .reduce((s, { ticket }) => s + ticket.quantity, 0);
-  const uniqueUsers = new Set(enriched.map(({ ticket }) => ticket.userId)).size;
-
-  const stats = [
-    {
-      label: "Transactions",
-      value: tickets.length,
-      icon: CreditCard,
-      color: "text-indigo-600",
-      bg: "bg-indigo-50",
-      border: "border-indigo-100",
-    },
-    {
-      label: "Revenue",
-      value: `$${totalRevenue.toFixed(0)}`,
-      icon: DollarSign,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-      border: "border-emerald-100",
-    },
-    {
-      label: "Tickets Sold",
-      value: totalTickets,
-      icon: TrendingUp,
-      color: "text-violet-600",
-      bg: "bg-violet-50",
-      border: "border-violet-100",
-    },
-    {
-      label: "Customers",
-      value: uniqueUsers,
-      icon: Users,
-      color: "text-amber-600",
-      bg: "bg-amber-50",
-      border: "border-amber-100",
-    },
-  ];
-
-  const handleClear = () => {
-    clearTransactions();
-    setShowClearConfirm(false);
-    setCleared(true);
-    setTimeout(() => setCleared(false), 3000);
-  };
+  // Logika Filter
+  const filteredTickets = filterConcert === "all"
+    ? tickets
+    : tickets.filter(t => t.concertId === filterConcert);
 
   return (
-    <PageTransition className="space-y-5">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Header Halaman */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-foreground tracking-tighter" style={{ fontWeight: 900, fontSize: "2.5rem" }}>
-            Transactions
-          </h1>
-          <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest mt-1">
-            History of all booking activities
-          </p>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Sales Transactions</h1>
+          <p className="text-slate-500 font-medium text-sm">Monitor and manage all financial records.</p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => setShowClearConfirm(true)}
-          className="flex items-center gap-2 px-6 py-3 rounded-2xl border border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100 text-sm font-black transition-all shadow-sm shadow-rose-500/10"
-        >
-          <Trash2 className="w-4 h-4" />
-          Clear History
-        </motion.button>
+
+        {/* Tombol Export Saja */}
+        <button className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all">
+          <Download className="w-4 h-4" /> Export CSV
+        </button>
       </div>
 
-      {/* Cleared toast */}
-      <AnimatePresence>
-        {cleared && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: "auto" }}
-            exit={{ opacity: 0, y: -10, height: 0 }}
-            className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-600 text-sm font-medium"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            Transaction history cleared successfully.
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Confirm modal */}
-      <AnimatePresence>
-        {showClearConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 12 }}
-              className="bg-white rounded-[2.5rem] shadow-2xl border border-border p-10 max-w-sm w-full"
-            >
-              <div className="flex items-start justify-between mb-6">
-                <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center shadow-sm border border-rose-100">
-                  <AlertTriangle className="w-7 h-7 text-rose-500" />
-                </div>
-                <button
-                  onClick={() => setShowClearConfirm(false)}
-                  className="w-10 h-10 flex items-center justify-center rounded-2xl text-muted-foreground hover:bg-accent transition-all border border-border shadow-sm"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <h3 className="text-foreground font-black text-xl mb-2 tracking-tight">Clear transaction history?</h3>
-              <p className="text-muted-foreground text-sm mb-8 font-medium leading-relaxed">
-                This will permanently remove all booked, attended, and cancelled records. Pending tickets will be preserved.
-              </p>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setShowClearConfirm(false)}
-                  className="flex-1 py-3 rounded-2xl border border-border text-muted-foreground text-sm font-bold hover:bg-accent transition-all"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleClear}
-                  className="flex-1 py-3 rounded-2xl bg-rose-500 text-white text-sm font-black hover:bg-rose-600 transition-all shadow-xl shadow-rose-500/20"
-                >
-                  Clear All
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-6">
-        {stats.map(({ label, value, icon: Icon, color, bg }, i) => (
-          <motion.div
-            key={label}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            className="bg-white rounded-[2rem] border border-border shadow-sm p-8 relative group overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center mb-6 border border-border shadow-sm relative z-10`}>
-              <Icon className={`w-6 h-6 ${color}`} />
-            </div>
-            <p className={`text-3xl font-black ${color} mb-1 tracking-tighter relative z-10`}>{value}</p>
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest relative z-10">{label}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-[2rem] border border-border shadow-sm p-6 flex flex-col sm:flex-row gap-4">
-        {/* Search */}
+      {/* Filter & Search Bar */}
+      <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by user, concert, booking ID..."
-            className="w-full pl-12 pr-5 py-3 rounded-2xl border border-border bg-accent text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-bold"
+            placeholder="Search by Order ID..."
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none"
           />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
 
-        {/* Status filter as pill tabs */}
-        <div className="flex gap-1 bg-accent rounded-2xl p-1.5 border border-border flex-wrap flex-1">
-          {(["all", "booked", "pending", "attended", "cancelled"] as FilterStatus[]).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all capitalize uppercase tracking-widest flex-1 min-w-[80px] ${
-                filter === f
-                  ? `bg-white shadow-sm ring-1 ring-border ${STATUS_COLORS[f]}`
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-
-        {/* Concert filter dropdown */}
-        <div className="relative min-w-[200px]">
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+        {/* Dropdown Filter Per Konser */}
+        <div className="relative">
           <select
-            value={concertFilter}
-            onChange={(e) => setConcertFilter(e.target.value)}
-            className="w-full pl-5 pr-10 py-3 rounded-2xl border border-border bg-accent text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-black uppercase tracking-widest appearance-none cursor-pointer"
+            value={filterConcert}
+            onChange={(e) => setFilterConcert(e.target.value)}
+            className="appearance-none pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer shadow-sm"
           >
             <option value="all">All Concerts</option>
-            {concerts.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.title}
-              </option>
+            {concerts.map(c => (
+              <option key={c.id} value={c.id}>{c.title}</option>
             ))}
           </select>
+          <Filter className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-[2rem] border border-border shadow-sm overflow-hidden">
+      {/* Table Section */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-border bg-accent/30">
-                {["Booking ID", "Customer", "Concert", "Date", "Qty", "Total", "Status"].map((h) => (
-                  <th
-                    key={h}
-                    className="px-6 py-4 text-left text-[10px] text-muted-foreground uppercase tracking-widest font-black"
-                  >
-                    {h}
-                  </th>
-                ))}
+              <tr className="bg-slate-50/50 border-b border-slate-100">
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Order ID</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Customer</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Event</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Amount</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-5 py-16 text-center">
-                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <CreditCard className="w-6 h-6 text-gray-200" />
-                    </div>
-                    <p className="text-sm text-gray-400">No transactions found</p>
-                    {search && (
-                      <button
-                        onClick={() => setSearch("")}
-                        className="mt-2 text-xs text-indigo-500 hover:underline"
-                      >
-                        Clear search
+            <tbody className="divide-y divide-slate-50">
+              {filteredTickets.map((ticket, i) => {
+                const concert = concerts.find(c => c.id === ticket.concertId);
+
+                return (
+                  <motion.tr
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.05 }}
+                    key={ticket.id}
+                    className="hover:bg-slate-50/30 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-bold text-slate-400">#{ticket.id.toUpperCase()}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-bold text-slate-900">User {ticket.userId}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">ID: {ticket.userId}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-semibold text-slate-700 truncate max-w-[150px]">{concert?.title || "Unknown Event"}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-extrabold text-slate-900">${ticket.totalPrice.toFixed(2)}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={ticket.status} />
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-primary transition-all">
+                        <ArrowUpRight className="w-4 h-4" />
                       </button>
-                    )}
-                  </td>
-                </tr>
-              )}
-              {filtered.map(({ ticket, user, concert }, i) => (
-                <motion.tr
-                  key={ticket.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.02 }}
-                  className="hover:bg-gray-50/60 transition-colors group"
-                >
-                  <td className="px-6 py-4">
-                    <span className="font-mono text-[10px] text-primary font-black bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10">
-                      {ticket.id.toUpperCase()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center flex-shrink-0 text-sm font-black shadow-sm">
-                        {user?.name?.charAt(0) ?? "?"}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm text-foreground font-black truncate max-w-[150px] tracking-tight">
-                          {user?.name ?? "Unknown"}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground font-bold truncate max-w-[150px] uppercase tracking-wider">{user?.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="min-w-0">
-                      <p className="text-sm text-foreground font-black truncate max-w-[200px] tracking-tight">
-                        {concert?.title ?? "—"}
-                      </p>
-                      <p className="text-xs text-primary font-bold">{concert?.artist}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-muted-foreground font-bold">{ticket.bookingDate}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-foreground font-black tracking-tight">×{ticket.quantity}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-base text-foreground font-black tracking-tighter">
-                      ${ticket.totalPrice.toFixed(2)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <StatusBadge status={ticket.status} />
-                  </td>
-                </motion.tr>
-              ))}
+                    </td>
+                  </motion.tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-
-        {/* Table footer */}
-        {filtered.length > 0 && (
-          <div className="px-8 py-5 border-t border-border flex items-center justify-between bg-accent/30 font-bold">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-widest">
-              <ChevronDown className="w-4 h-4" />
-              Showing <span className="text-foreground">{filtered.length}</span> of{" "}
-              <span className="text-foreground">{tickets.length}</span> records
-            </div>
-            <span className="text-xs text-muted-foreground uppercase tracking-widest">
-              Total Revenue: <span className="text-emerald-600 text-lg font-black tracking-tighter ml-2">${totalRevenue.toFixed(2)}</span>
-            </span>
-          </div>
-        )}
       </div>
-    </PageTransition>
+    </div>
   );
 }

@@ -47,16 +47,11 @@ function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans">
-      {/* Sidebar sekarang setinggi layar penuh */}
       <AdminSidebar />
-
-      {/* Area Konten Utama */}
       <main className="flex-1 ml-64 flex flex-col min-h-screen">
         <div className="flex-1 p-8">
           <Outlet />
         </div>
-        {/* Footer Admin disesuaikan agar tetap di bawah konten */}
-        <Footer />
       </main>
     </div>
   );
@@ -78,6 +73,7 @@ export const router = createBrowserRouter([
     Component: RegisterPage,
   },
   {
+    // Layout untuk User Biasa
     element: <UserLayout />,
     children: [
       { path: "dashboard", Component: UserDashboard },
@@ -92,13 +88,15 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    // Layout untuk Admin
+    path: "/admin", // Letakkan path utama di sini
     element: <AdminLayout />,
     children: [
-      { path: "admin", Component: AdminDashboard },
-      { path: "admin/concerts", Component: AdminConcertsPage },
-      { path: "admin/transactions", Component: AdminTransactionsPage },
-      { path: "admin/data-table", Component: DataTablePage },
-      { path: "profile", Component: ProfilePage },
+      { index: true, Component: AdminDashboard }, // Menjadi "/admin"
+      { path: "concerts", Component: AdminConcertsPage }, // Menjadi "/admin/concerts"
+      { path: "transactions", Component: AdminTransactionsPage }, // Menjadi "/admin/transactions"
+
+      // Catatan: Rute "data-table" dan "profile" admin SUDAH DIHAPUS di sini
     ],
   },
   {
