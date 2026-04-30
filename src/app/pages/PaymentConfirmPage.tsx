@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, CreditCard, CheckCircle2, MapPin, Calendar, Ticket, AlertCircle, Smartphone, Building2, Wallet, Clock, ReceiptText, Lock, ShieldCheck, User, ArrowRight, ChevronDown, Check } from "lucide-react";
+import { ArrowLeft, CreditCard, CheckCircle2, MapPin, Calendar, Ticket, AlertCircle, Building2, Wallet, Clock, ReceiptText, Lock, ShieldCheck, User, ArrowRight, ChevronDown, Check } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { PageTransition } from "../components/PageTransition";
@@ -84,8 +84,7 @@ export function PaymentConfirmPage() {
   const handleConfirm = async () => {
     setError("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    const result = payTicket(ticket.id);
+    const result = await payTicket(ticket.id);
     setLoading(false);
     if (result.success) setConfirmed(true);
     else setError(result.message);
@@ -219,8 +218,8 @@ export function PaymentConfirmPage() {
                             setIsDropdownOpen(false);
                           }}
                           className={`flex items-center gap-4 p-3.5 rounded-xl transition-all ${selectedPayment === method.id
-                              ? "bg-white shadow-sm border border-slate-200"
-                              : "hover:bg-slate-200/50 border border-transparent"
+                            ? "bg-white shadow-sm border border-slate-200"
+                            : "hover:bg-slate-200/50 border border-transparent"
                             }`}
                         >
                           <div className={`${selectedPayment === method.id ? "text-primary" : "text-slate-500"}`}>

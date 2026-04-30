@@ -22,7 +22,18 @@ import { useAuth } from "./context/AuthContext";
 // ─── Layout wrappers ───────────────────────────────────────────────
 
 function UserLayout() {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth(); // 1. Tambahkan loading di sini
+
+  // 2. Tahan di sini selama Supabase masih loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // 3. Pengecekan aman dilakukan setelah loading selesai
   if (!currentUser) return <Navigate to="/login" replace />;
   if (currentUser.role === "admin") return <Navigate to="/admin" replace />;
 
@@ -39,8 +50,18 @@ function UserLayout() {
 }
 
 function AdminLayout() {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth(); // 1. Tambahkan loading di sini
 
+  // 2. Tahan di sini selama Supabase masih loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // 3. Pengecekan aman dilakukan setelah loading selesai
   if (!currentUser) return <Navigate to="/login" replace />;
   if (currentUser.role !== "admin") return <Navigate to="/dashboard" replace />;
 

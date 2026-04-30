@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
 import { Calendar, MapPin, Users, Sparkles, ArrowRight, Clock, Heart } from "lucide-react";
-import { Concert } from "../data/mockData";
+import { Concert } from "../context/DataContext";
 import { StatusBadge } from "./StatusBadge";
 import { useFavorites } from "../context/FavoritesContext";
 

@@ -1,95 +1,96 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
-import { USERS, User } from "../data/mockData";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { Session, AuthChangeEvent } from "@supabase/supabase-js";
+import { supabase } from "../../lib/supabase";
 
-interface AuthContextType {
-  currentUser: User | null;
-  login: (email: string, password: string) => { success: boolean; message: string };
-  register: (name: string, email: string, password: string) => { success: boolean; message: string };
-  logout: () => void;
-  updateProfile: (data: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: string;
-    password?: string;
-  }) => { success: boolean; message: string };
-  isAdmin: boolean;
+export interface Profile {
+  id: string;
+  name: string;
+  email: string;
+  role?: string;
+  created_at?: string;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+interface AuthContextType {
+  currentUser: Profile | null;
+  loading: boolean;
+  login: (email: string, pass: string) => Promise<{ success: boolean; message?: string }>;
+  register: (name: string, email: string, pass: string) => Promise<{ success: boolean; message?: string }>;
+  logout: () => Promise<void>;
+  isAdmin: boolean; // <--- 1. KITA TAMBAHKAN DEKLARASINYA DI SINI
+}
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(USERS);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-  const login = useCallback(
-    (email: string, password: string) => {
-      const user = users.find((u) => u.email === email && u.password === password);
-      if (user) {
-        setCurrentUser(user);
-        return { success: true, message: "Login successful!" };
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [currentUser, setCurrentUser] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // <--- 2. KITA BUAT LOGIKA PENGECEKAN ADMIN DI SINI
+  const isAdmin = currentUser?.role === 'admin';
+
+  const fetchProfile = async (userId: string) => {
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (!error && data) {
+      setCurrentUser(data as Profile);
+    } else {
+      setCurrentUser(null);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setLoading(false);
       }
-      return { success: false, message: "Invalid email or password." };
-    },
-    [users]
-  );
+    });
 
-  const register = useCallback(
-    (name: string, email: string, password: string) => {
-      if (users.find((u) => u.email === email)) {
-        return { success: false, message: "Email already registered." };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        } else {
+          setCurrentUser(null);
+        }
       }
-      const newUser: User = {
-        id: `u${users.length + 1}`,
-        name,
-        email,
-        password,
-        role: "user",
-        createdAt: new Date().toISOString().split("T")[0],
-      };
-      setUsers((prev) => [...prev, newUser]);
-      setCurrentUser(newUser);
-      return { success: true, message: "Registration successful!" };
-    },
-    [users]
-  );
+    );
 
-  const logout = useCallback(() => {
-    setCurrentUser(null);
+    return () => subscription.unsubscribe();
   }, []);
 
-  const updateProfile = useCallback(
-    (data: { name: string; email: string; phone?: string; address?: string; password?: string }) => {
-      if (!currentUser) return { success: false, message: "Not logged in." };
-      const emailTaken = users.find((u) => u.email === data.email && u.id !== currentUser.id);
-      if (emailTaken) return { success: false, message: "Email already in use by another account." };
+  const login = async (email: string, pass: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) return { success: false, message: error.message };
+    return { success: true };
+  };
 
-      const updated: User = {
-        ...currentUser,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        ...(data.password && data.password.length >= 6 ? { password: data.password } : {}),
-      };
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updated : u)));
-      setCurrentUser(updated);
-      return { success: true, message: "Profile updated successfully!" };
-    },
-    [currentUser, users]
-  );
+  const register = async (name: string, email: string, pass: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { full_name: name } }
+    });
+    if (error) return { success: false, message: error.message };
+    return { success: true };
+  };
 
-  const isAdmin = currentUser?.role === "admin";
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setCurrentUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, register, logout, updateProfile, isAdmin }}>
+    // <--- 3. TERAKHIR, KITA LEMPAR isAdmin KE PROVIDER AGAR BISA DIPAKAI DI SEMUA HALAMAN
+    <AuthContext.Provider value={{ currentUser, loading, login, register, logout, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+  const context = useContext(AuthContext);
+  if (context === undefined) throw new Error("useAuth must be used within an AuthProvider");
+  return context;
 }

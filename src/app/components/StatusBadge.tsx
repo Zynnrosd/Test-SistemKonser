@@ -34,6 +34,11 @@ const CONFIG: Record<string, { label: string; classes: string; dot: string }> = 
     classes: "bg-slate-100 text-slate-500 border border-slate-200",
     dot: "bg-slate-400",
   },
+  sold_out: {
+    label: "Sold Out",
+    classes: "bg-slate-100 text-slate-500 border border-slate-200",
+    dot: "bg-slate-400",
+  },
 };
 
 export function StatusBadge({ status, size = "sm" }: StatusBadgeProps) {

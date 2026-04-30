@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Check, Ticket, MapPin, CreditCard, ShieldCheck, Plus, Minus, Wallet, Building2 } from "lucide-react";
+import { ArrowLeft, Check, MapPin, CreditCard, ShieldCheck, Plus, Minus, Wallet, Building2 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { PageTransition } from "../components/PageTransition";
@@ -61,15 +61,13 @@ export function BookingPage() {
   const fees = subtotal * 0.05;
   const total = subtotal + fees;
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (!currentUser) return;
     try {
-      const result = bookTicket(
-        currentUser.id,
+      const result = await bookTicket(
         concert.id,
-        safeQuantity,
-        total,
         category.id,
+        safeQuantity,
         paymentMethod
       );
       if (result.success) {

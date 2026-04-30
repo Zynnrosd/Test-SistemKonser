@@ -11,8 +11,7 @@ import {
   Music2,
   AlertTriangle,
 } from "lucide-react";
-import { useData } from "../context/DataContext";
-import { Concert } from "../data/mockData";
+import { useData, Concert } from "../context/DataContext";
 import { StatusBadge } from "../components/StatusBadge";
 import { PageTransition } from "../components/PageTransition";
 
@@ -74,7 +73,7 @@ export function AdminConcertsPage() {
       availableSeats: String(concert.availableSeats),
       image: concert.image,
       description: concert.description,
-      status: concert.status,
+      status: concert.status === "sold_out" ? "active" : (concert.status as "active" | "archived"),
     });
     setModalOpen(true);
   };
@@ -112,7 +111,10 @@ export function AdminConcertsPage() {
               {concerts.length} TOTAL
             </span>
             <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200">
-              {concerts.filter(c => c.status === "active").length} ACTIVE
+              {concerts.filter(c => c.status === "active" && c.availableSeats > 0).length} ACTIVE
+            </span>
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-600 border border-rose-200">
+              {concerts.filter(c => c.status === "active" && c.availableSeats === 0).length} SOLD OUT
             </span>
           </div>
         </div>
@@ -144,11 +146,10 @@ export function AdminConcertsPage() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-6 py-2 rounded-xl text-sm transition-all capitalize font-bold ${
-                filter === f
-                  ? "bg-white text-primary shadow-sm ring-1 ring-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`px-6 py-2 rounded-xl text-sm transition-all capitalize font-bold ${filter === f
+                ? "bg-white text-primary shadow-sm ring-1 ring-border"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               {f}
             </button>
@@ -239,7 +240,7 @@ export function AdminConcertsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <StatusBadge status={concert.status} />
+                    <StatusBadge status={concert.status === "archived" ? "archived" : (concert.availableSeats === 0 ? "sold out" : "active")} />
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center justify-end gap-2">

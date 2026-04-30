@@ -166,7 +166,7 @@ export function TicketDetailPage() {
                 <div className="space-y-3">
                   <InfoRow icon={<Hash />} label="Ref No." value={`#${ticket.id.toUpperCase()}`} mono />
                   <InfoRow icon={<User />} label="Booked by" value={currentUser?.name ?? "—"} />
-                  <InfoRow icon={<Calendar />} label="Book Date" value={ticket.bookingDate} />
+                  <InfoRow icon={<Calendar />} label="Book Date" value={new Date(ticket.bookingTimestamp).toLocaleDateString()} />
                   <InfoRow icon={<Ticket />} label="Quantity" value={`${ticket.quantity} Ticket${ticket.quantity > 1 ? "s" : ""}`} />
                 </div>
               </div>

@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Music2, LogOut, Ticket, LayoutDashboard, ChevronDown,
-  Compass, TrendingUp, Menu, X, Shield, Database,
+  Compass, TrendingUp, Menu, X, Database,
   Heart, ShoppingCart, User,
 } from "lucide-react";
 import { useState, ReactNode, useEffect } from "react";
@@ -76,8 +76,8 @@ export function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200"
-          : "bg-transparent border-b border-transparent"
+        ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200"
+        : "bg-transparent border-b border-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,16 +106,16 @@ export function Navbar() {
                     key={to}
                     to={to}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${active
-                        ? "bg-slate-100 text-primary"
-                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                      ? "bg-slate-100 text-primary"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                       }`}
                   >
                     <Icon className={`w-4 h-4 ${active ? "text-primary" : "text-slate-400"}`} />
                     {label}
                     {badge !== null && (
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center ${to === "/favorites"
-                          ? "bg-rose-100 text-rose-600"
-                          : "bg-primary/10 text-primary"
+                        ? "bg-rose-100 text-rose-600"
+                        : "bg-primary/10 text-primary"
                         }`}>
                         {badge}
                       </span>

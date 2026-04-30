@@ -4,7 +4,7 @@ import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { ConcertCard } from "../components/ConcertCard";
 import { PageTransition } from "../components/PageTransition";
-import { Sparkles, Search, SlidersHorizontal, ArrowDownAz, Calendar, DollarSign, Ticket, Music, Star, X } from "lucide-react";
+import { Sparkles, Search, SlidersHorizontal, ArrowDownAz, Calendar, DollarSign, Ticket, X } from "lucide-react";
 
 const CATEGORIES = ["All", "Pop", "Rock", "Jazz", "Hip Hop", "Classical"];
 
