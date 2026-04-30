@@ -43,15 +43,24 @@ export function BookingPage() {
 
   if (!concert) return null;
 
-  const handleIncrement = () => setQuantity(prev => prev + 1);
-  const handleDecrement = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+  const maxSeats = concert.availableSeats;
+
+  const handleIncrement = () => {
+    setQuantity(prev => (prev < maxSeats ? prev + 1 : prev));
+  };
+
+  const handleDecrement = () => {
+    setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+  };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value);
-    if (!isNaN(val) && val >= 1) {
+    if (isNaN(val) || val < 1) {
+      setQuantity(1);
+    } else if (val > maxSeats) {
+      setQuantity(maxSeats);
+    } else {
       setQuantity(val);
-    } else if (e.target.value === "") {
-      setQuantity(0);
     }
   };
 
@@ -81,17 +90,12 @@ export function BookingPage() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 pb-32 font-sans text-slate-900 selection:bg-primary/20 overflow-x-hidden">
 
-      {/* 1. AURA BACKGROUND (DENGAN GRADASI PENUTUP ATAS & BAWAH) */}
+      {/* AURA BACKGROUND */}
       <div className="absolute top-0 left-0 w-full h-[100vh] pointer-events-none z-0 overflow-hidden">
-        {/* Lingkaran Aura */}
         <div className="absolute top-[-5%] left-[-5%] w-[50vw] h-[50vw] bg-fuchsia-500/10 blur-[120px] rounded-full mix-blend-multiply opacity-80" />
         <div className="absolute top-[-5%] right-[-5%] w-[50vw] h-[50vw] bg-cyan-400/10 blur-[120px] rounded-full mix-blend-multiply opacity-80" />
         <div className="absolute top-[20%] left-[25%] w-[50vw] h-[50vw] bg-primary/10 blur-[120px] rounded-full mix-blend-multiply opacity-60" />
-
-        {/* MASKING ATAS: Memudarkan potongan kasar di ujung atas browser */}
         <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-slate-50 to-transparent" />
-
-        {/* MASKING BAWAH: Memudarkan aura agar menyatu halus ke warna polos halaman di bagian bawah */}
         <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-b from-transparent to-slate-50" />
       </div>
 
@@ -153,13 +157,43 @@ export function BookingPage() {
                 <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-xs shadow-md">2</div>
                 <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest">Number of Tickets</h2>
               </div>
-              <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[1.5rem] p-4 shadow-sm inline-flex items-center gap-6">
-                <button onClick={handleDecrement} className="w-10 h-10 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 hover:border-slate-400 transition-all shadow-sm active:scale-95"><Minus className="w-4 h-4" /></button>
-                <div className="flex flex-col items-center min-w-[60px]">
-                  <input type="number" value={quantity === 0 ? "" : quantity} onChange={handleQuantityChange} className="w-16 text-center text-3xl font-black text-slate-900 bg-transparent outline-none focus:ring-0" />
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Seats</span>
+
+              <div className="flex items-center gap-4">
+                <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[1.5rem] p-4 shadow-sm inline-flex items-center gap-6">
+                  <button
+                    onClick={handleDecrement}
+                    disabled={quantity <= 1}
+                    className={`w-10 h-10 flex items-center justify-center border rounded-xl transition-all shadow-sm active:scale-95 ${quantity <= 1 ? "bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed" : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-400"}`}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex flex-col items-center min-w-[60px]">
+                    <input
+                      type="number"
+                      min="1"
+                      max={maxSeats}
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      className="w-16 text-center text-3xl font-black text-slate-900 bg-transparent outline-none focus:ring-0"
+                    />
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Seats</span>
+                  </div>
+
+                  <button
+                    onClick={handleIncrement}
+                    disabled={quantity >= maxSeats}
+                    className={`w-10 h-10 flex items-center justify-center border rounded-xl transition-all shadow-sm active:scale-95 ${quantity >= maxSeats ? "bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed" : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-400"}`}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
                 </div>
-                <button onClick={handleIncrement} className="w-10 h-10 flex items-center justify-center bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 hover:border-slate-400 transition-all shadow-sm active:scale-95"><Plus className="w-4 h-4" /></button>
+
+                {/* Indikator Sisa Kursi */}
+                <div className="bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200 flex flex-col">
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Available</span>
+                  <span className="text-sm font-bold text-slate-900">{maxSeats} Tickets</span>
+                </div>
               </div>
             </motion.div>
 

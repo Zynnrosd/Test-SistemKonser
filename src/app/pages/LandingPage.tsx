@@ -3,10 +3,8 @@ import { ArrowRight, Ticket, Sparkles, CalendarDays, Mic2, Users2, Trophy, Searc
 import { Link } from "react-router";
 import { useData } from "../context/DataContext";
 import { useRef, useState, useEffect } from "react";
-// Impor Footer yang konsisten
 import { Footer } from "../components/Footer";
 
-// Variants untuk Animasi Stagger Grid yang lebih Mulus (Tanpa Bouncing/Spring)
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -21,18 +19,17 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    // TAMBAHKAN `as const` DI SINI
     transition: { duration: 1, ease: [0.16, 1, 0.3, 1] as const }
   }
 };
 
-// Variants untuk Reveal Teks Per Kata (Efek Blur Reveal ala Vercel)
+// Variants untuk Reveal Teks Per Kata
 const quoteVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08, // Jeda antar kata dipercepat sedikit agar mengalir
+      staggerChildren: 0.08,
       delayChildren: 0.1
     },
   },
@@ -46,7 +43,6 @@ const wordVariants = {
     filter: "blur(0px)",
     transition: {
       duration: 1.2,
-      // TAMBAHKAN `as const` DI SINI
       ease: [0.16, 1, 0.3, 1] as const,
     },
   },
@@ -54,11 +50,10 @@ const wordVariants = {
 
 export function LandingPage() {
   const { concerts } = useData();
-  const featuredConcerts = concerts.slice(0, 3);
+  const visibleConcerts = concerts.filter(c => c.status !== "archived");
+  const featuredConcerts = visibleConcerts.slice(0, 3);
   const featuresRef = useRef<HTMLDivElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
-
-  // Judul utama yang akan dipisahkan menjadi kata-kata
   const titleString = "Unlock the Ultimate Concert Experience.";
   const titleWords = titleString.split(" ");
 
@@ -83,7 +78,6 @@ export function LandingPage() {
   const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   return (
-    // PERBAIKAN 1: overflow-hidden diubah jadi overflow-x-hidden agar Footer tidak terpotong di bawah
     <div ref={containerRef} className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-primary/20 overflow-x-hidden">
 
       {/* Background Parallax */}
@@ -101,7 +95,7 @@ export function LandingPage() {
             maxWidth: isScrolled ? "1100px" : "1280px",
             y: isScrolled ? 10 : 0
           }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} // Navbar juga dibuat mulus animasinya
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className={`mx-auto flex items-center justify-between px-6 py-3 rounded-2xl border transition-all duration-500 ${isScrolled
             ? "bg-white/70 backdrop-blur-xl border-slate-200/60 shadow-lg shadow-slate-200/20"
             : "bg-transparent border-transparent"
@@ -229,7 +223,6 @@ export function LandingPage() {
       </div>
 
       {/* Featured Section */}
-      {/* PERBAIKAN 2: pb-48 dikurangi jadi pb-24 agar Footer tidak terlalu jauh jaraknya */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24 md:pb-32">
         <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
           <div className="max-w-xl">
@@ -265,7 +258,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* PERBAIKAN 3: Footer dibungkus div relative z-50 dan diberi background agar pasti muncul */}
       <div className="relative z-50 bg-white border-t border-slate-200">
         <Footer />
       </div>

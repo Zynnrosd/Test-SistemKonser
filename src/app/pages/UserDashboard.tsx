@@ -10,6 +10,7 @@ const CATEGORIES = ["All", "Pop", "Rock", "Jazz", "Hip Hop", "Classical"];
 
 export function UserDashboard() {
   const { concerts } = useData();
+  const visibleConcerts = concerts.filter(c => c.status !== "archived");
   const { currentUser } = useAuth();
 
   const [activeCategory, setActiveCategory] = useState("All");
@@ -18,7 +19,7 @@ export function UserDashboard() {
   const [activeSort, setActiveSort] = useState("Newest");
 
   // Logic Filter & Sort
-  const processedConcerts = concerts
+  const processedConcerts = visibleConcerts
     .filter(c => {
       const matchCat = activeCategory === "All" || c.genre.includes(activeCategory);
       const matchSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,19 +44,16 @@ export function UserDashboard() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 pb-48 font-sans text-slate-900 selection:bg-primary/20 overflow-hidden">
 
-      {/* 1. BACKGROUND AURA (Colorful tapi Tipis/Subtle agar konsisten dengan halaman lain) */}
+      {/* BACKGROUND AURA */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Sudut Kiri Atas: Primary/Indigo */}
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/20 blur-[160px] rounded-full mix-blend-multiply opacity-40" />
-        {/* Sudut Kanan Atas: Fuchsia/Pink */}
         <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/20 blur-[160px] rounded-full mix-blend-multiply opacity-30" />
-        {/* Sudut Bawah: Cyan/Biru Muda */}
         <div className="absolute bottom-[0%] left-[20%] w-[60vw] h-[60vw] bg-cyan-400/20 blur-[160px] rounded-full mix-blend-multiply opacity-20" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
 
-        {/* 2. HERO SECTION CTA (INTERAKTIF & MENGAMBANG) */}
+        {/* HERO SECTION CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -95,7 +93,7 @@ export function UserDashboard() {
               </motion.p>
             </div>
 
-            {/* Kanan: Dekorasi VIP Ticket yang MENGAMBANG & INTERAKTIF */}
+            {/* Kanan: Dekorasi VIP Ticket */}
             <div className="hidden lg:flex w-2/5 justify-end relative perspective-1000">
 
               <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="relative z-20">
@@ -121,7 +119,7 @@ export function UserDashboard() {
           </div>
         </motion.div>
 
-        {/* 3. CONTROLS (Pill Tabs & Search) */}
+        {/* CONTROLS (Pill Tabs & Search) */}
         <div className="mb-12">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
 
@@ -218,7 +216,7 @@ export function UserDashboard() {
           </AnimatePresence>
         </div>
 
-        {/* 4. MASONRY/GRID ANIMATION */}
+        {/* MASONRY/GRID ANIMATION */}
         <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           <AnimatePresence mode="popLayout">
             {processedConcerts.map((concert, index) => (

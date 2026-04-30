@@ -2,14 +2,14 @@
 
 :root {
   --font-size: 16px;
-  /* Premium Light Theme (White & Taro Purple) */
+  /* Light Theme (White & Taro Purple) */
   --background: #ffffff;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #8b5cf6; /* Vibrant Taro Purple */
+  --primary: #8b5cf6;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
@@ -24,12 +24,12 @@
   --input-background: #ffffff;
   --switch-background: #e2e8f0;
   --ring: #8b5cf6;
-  
+
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  
-  --radius: 1.5rem; /* Larger radius for premium feel */
-  
+
+  --radius: 1.5rem;
+
   --sidebar: #ffffff;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #8b5cf6;
@@ -48,7 +48,7 @@
   --card-foreground: #f8fafc;
   --popover: #0a051e;
   --popover-foreground: #f8fafc;
-  --primary: #a78bfa; /* Brighter for dark mode */
+  --primary: #a78bfa;
   --primary-foreground: #ffffff;
   --secondary: #1a1533;
   --secondary-foreground: #f8fafc;
@@ -62,7 +62,7 @@
   --input: #1e293b;
   --input-background: rgba(10, 5, 30, 0.5);
   --ring: #a78bfa;
-  
+
   --sidebar: #050012;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #a78bfa;
@@ -129,14 +129,17 @@
     width: 6px;
     height: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+
   ::-webkit-scrollbar-thumb {
     background: var(--primary);
     border-radius: 999px;
     opacity: 0.3;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     opacity: 0.5;
   }
@@ -144,18 +147,39 @@
 
 /* Animations */
 @keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.2; filter: blur(40px); }
-  50% { opacity: 0.4; filter: blur(60px); }
+
+  0%,
+  100% {
+    opacity: 0.2;
+    filter: blur(40px);
+  }
+
+  50% {
+    opacity: 0.4;
+    filter: blur(60px);
+  }
 }
 
 .animate-shimmer {
@@ -218,7 +242,8 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
 }
 
-.dark .glass, .glass-dark {
+.dark .glass,
+.glass-dark {
   background: rgba(10, 5, 30, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -235,4 +260,3 @@
   @apply shadow-xl -translate-y-2 border-primary/20;
   box-shadow: 0 20px 40px -15px rgba(139, 92, 246, 0.15);
 }
-

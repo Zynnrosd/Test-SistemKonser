@@ -16,7 +16,7 @@ export function FavoritesPage() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 selection:bg-primary/20 overflow-x-hidden flex flex-col">
 
-      {/* 1. BACKGROUND AURA (Konsisten dengan Dashboard) */}
+      {/* BACKGROUND AURA */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/5 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/5 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
@@ -24,7 +24,7 @@ export function FavoritesPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 flex-grow">
 
-        {/* Header (Dirampingkan proporsinya) */}
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8">
           <div>
             <h1 className="text-slate-900 font-black text-3xl md:text-4xl tracking-tight mb-1.5">Saved Favorites</h1>
@@ -76,7 +76,7 @@ export function FavoritesPage() {
                     initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, duration: 0.3 }}
                     className="group relative bg-white/80 backdrop-blur-xl rounded-[1.5rem] border border-white overflow-hidden shadow-lg shadow-slate-200/40 hover:shadow-xl hover:shadow-slate-300/50 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
                   >
-                    {/* Image Header (Lebih Compact) */}
+                    {/* Image Header */}
                     <div className="relative h-44 overflow-hidden bg-slate-100 m-2.5 mb-0 rounded-[1.25rem]">
                       <img
                         src={concert.image}
@@ -89,7 +89,7 @@ export function FavoritesPage() {
                         <StatusBadge status={soldOut ? "sold out" : concert.status} />
                       </div>
 
-                      {/* Tombol Remove Favorite (Lebih Elegant) */}
+                      {/* Tombol Remove Favorite */}
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -113,7 +113,7 @@ export function FavoritesPage() {
                       </div>
                     </div>
 
-                    {/* Content (Padding & Typografi Dirampingkan) */}
+                    {/* Content */}
                     <div className="flex-1 p-5 flex flex-col">
                       <div className="flex-1">
                         <p className="text-primary font-bold text-[10px] mb-1.5 uppercase tracking-[0.15em] truncate">
@@ -130,7 +130,7 @@ export function FavoritesPage() {
                         </div>
                       </div>
 
-                      {/* Progress Bar (Sama seperti ConcertCard) */}
+                      {/* Progress Bar */}
                       <div className="mb-5">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">
                           <span>Capacity</span>

@@ -34,13 +34,12 @@ export function MyTicketsPage() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 selection:bg-primary/20 overflow-x-hidden">
 
-      {/* 1. BACKGROUND SAMA DENGAN DASHBOARD */}
+      {/* BACKGROUND */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/5 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/5 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
       </div>
 
-      {/* Kontainer diperkecil menjadi max-w-4xl agar lebih pas */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 flex flex-col min-h-[80vh]">
 
         {/* Header */}
@@ -112,11 +111,11 @@ export function MyTicketsPage() {
                       to={`/tickets/${ticket.id}`}
                       className="group block bg-white rounded-[1.5rem] border border-slate-100 shadow-lg shadow-slate-200/40 hover:shadow-xl hover:shadow-slate-300/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden relative"
                     >
-                      {/* Ribbon Dekorasi Kiri */}
+                      {/* Ribbon Kiri */}
                       <div className="absolute top-0 left-0 w-1.5 h-full bg-slate-100 group-hover:bg-primary transition-colors" />
 
                       <div className="flex flex-col sm:flex-row pl-1.5">
-                        {/* Concert image (Diperkecil) */}
+                        {/* Concert image */}
                         <div className="w-full sm:w-36 h-36 flex-shrink-0 relative overflow-hidden bg-slate-100 m-3 rounded-xl">
                           <img
                             src={concert!.image}
@@ -161,7 +160,7 @@ export function MyTicketsPage() {
                         </div>
                       </div>
 
-                      {/* Stub footer (Potongan Tiket) */}
+                      {/* Stub footer */}
                       <div className="relative border-t-2 border-dashed border-slate-100 px-5 py-2.5 bg-slate-50/50 flex items-center justify-between">
                         <div className="absolute -left-2.5 top-0 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-50 border-b border-r border-slate-100 shadow-inner" />
                         <div className="absolute -right-2.5 top-0 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-50 border-b border-l border-slate-100 shadow-inner" />

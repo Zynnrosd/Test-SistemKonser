@@ -16,7 +16,7 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<{ success: boolean; message?: string }>;
   register: (name: string, email: string, pass: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
-  isAdmin: boolean; // <--- 1. KITA TAMBAHKAN DEKLARASINYA DI SINI
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // <--- 2. KITA BUAT LOGIKA PENGECEKAN ADMIN DI SINI
+  // LOGIKA PENGECEKAN ADMIN
   const isAdmin = currentUser?.role === 'admin';
 
   const fetchProfile = async (userId: string) => {
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    // <--- 3. TERAKHIR, KITA LEMPAR isAdmin KE PROVIDER AGAR BISA DIPAKAI DI SEMUA HALAMAN
+    // Expose isAdmin ke provider untuk akses global
     <AuthContext.Provider value={{ currentUser, loading, login, register, logout, isAdmin }}>
       {children}
     </AuthContext.Provider>

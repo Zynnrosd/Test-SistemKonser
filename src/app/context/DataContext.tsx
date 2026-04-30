@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "./AuthContext";
 
-// --- INTERFACES (Sesuai dengan database Supabase) ---
+// INTERFACES (Sesuai dengan database Supabase)
 export interface Concert {
   id: string;
   title: string;
@@ -13,7 +13,7 @@ export interface Concert {
   city: string;
   price: number;
   capacity: number;
-  availableSeats: number; // di DB namanya available_seats
+  availableSeats: number;
   genre: string;
   description: string;
   image: string;
@@ -23,14 +23,14 @@ export interface Concert {
 
 export interface Ticket {
   id: string;
-  concertId: string; // di DB concert_id
-  userId: string;    // di DB user_id
-  seatCategory: string; // di DB seat_category
+  concertId: string;
+  userId: string;
+  seatCategory: string;
   quantity: number;
-  totalPrice: number; // di DB total_price
-  paymentMethod: string; // di DB payment_method
+  totalPrice: number;
+  paymentMethod: string;
   status: "pending" | "booked" | "cancelled";
-  bookingTimestamp: string; // di DB booking_timestamp
+  bookingTimestamp: string;
 }
 
 interface DataContextType {
@@ -44,7 +44,6 @@ interface DataContextType {
   payTicket: (ticketId: string) => Promise<{ success: boolean; message: string }>;
   refreshData: () => Promise<void>;
 
-  // --- FUNGSI BARU UNTUK ADMIN & USER ---
   addConcert: (data: Omit<Concert, "id" | "createdAt">) => Promise<void>;
   updateConcert: (id: string, data: Partial<Concert>) => Promise<void>;
   softDeleteConcert: (id: string) => Promise<void>;
@@ -61,19 +60,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // --- FUNGSI TARIK DATA DARI SUPABASE ---
+  // FUNGSI AMBIL DATA DARI SUPABASE
   const fetchAllData = async () => {
     setLoadingData(true);
     try {
-      // 1. Tarik semua konser (Public)
       const { data: concertData, error: concertErr } = await supabase
         .from('concerts')
         .select('*')
-        .order('date', { ascending: true }); // Diurutkan berdasarkan tanggal
+        .order('date', { ascending: true });
 
       if (concertErr) throw concertErr;
 
-      // Mapping penamaan DB (snake_case) ke Frontend (camelCase)
       const formattedConcerts: Concert[] = concertData.map((c: any) => ({
         id: c.id,
         title: c.title,
@@ -93,7 +90,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
       setConcerts(formattedConcerts);
 
-      // 2. Tarik tiket HANYA JIKA user sudah login
       if (currentUser) {
         const { data: ticketData, error: ticketErr } = await supabase
           .from('bookings')
@@ -116,7 +112,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }));
         setTickets(formattedTickets);
       } else {
-        setTickets([]); // Kosongkan tiket jika tidak ada user
+        setTickets([]);
       }
     } catch (err) {
       console.error("Error fetching data from Supabase:", err);
@@ -129,13 +125,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     fetchAllData();
   }, [currentUser]);
 
-  // --- HELPER FUNCTIONS ---
+  // HELPER FUNCTIONS
   const getConcert = (id: string) => concerts.find((c) => c.id === id);
   const getTicket = (id: string) => tickets.find((t) => t.id === id);
   const getUserTickets = (userId: string) => tickets.filter((t) => t.userId === userId && t.status === "booked");
   const getPendingTickets = (userId: string) => tickets.filter((t) => t.userId === userId && t.status === "pending");
 
-  // --- FUNGSI BAYAR TIKET ---
+  // FUNGSI BAYAR TIKET
   const payTicket = async (ticketId: string) => {
     try {
       const { error } = await supabase
@@ -152,11 +148,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ==========================================
-  // --- FUNGSI BARU (CRUD ADMIN & BOOKING) ---
-  // ==========================================
-
-  // Helper untuk mengubah data dari React (camelCase) agar cocok dengan Kolom Supabase (snake_case)
+  // FUNGSI CRUD ADMIN & BOOKING
   const mapToSupabaseConcert = (data: Partial<Concert>) => {
     const dbData: any = { ...data };
     if (dbData.availableSeats !== undefined) {
@@ -166,7 +158,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return dbData;
   };
 
-  // 1. Tambah Konser (Admin)
   const addConcert = async (data: Omit<Concert, "id" | "createdAt">) => {
     const dbData = mapToSupabaseConcert(data);
     const { error } = await supabase.from('concerts').insert([dbData]);
@@ -178,7 +169,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 2. Edit Konser (Admin)
   const updateConcert = async (id: string, data: Partial<Concert>) => {
     const dbData = mapToSupabaseConcert(data);
     const { error } = await supabase.from('concerts').update(dbData).eq('id', id);
@@ -190,17 +180,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 3. Delete Sementara / Archive (Admin)
   const softDeleteConcert = async (id: string) => {
     await updateConcert(id, { status: 'archived' });
   };
 
-  // 4. Kembalikan Konser dari Archive (Admin)
   const restoreConcert = async (id: string) => {
     await updateConcert(id, { status: 'active' });
   };
 
-  // 5. Hapus Konser Permanen (Admin)
   const hardDeleteConcert = async (id: string) => {
     const { error } = await supabase.from('concerts').delete().eq('id', id);
     if (error) {
@@ -211,35 +198,66 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 6. User Memesan Tiket Baru (User Booking)
+  // Init booking & sinkronisasi stok via optimistic update
   const bookTicket = async (concertId: string, category: string, quantity: number, paymentMethod: string) => {
     try {
       if (!currentUser) throw new Error("Anda harus login untuk memesan tiket.");
 
-      // Hitung total harga berdasarkan harga konser
       const targetConcert = concerts.find(c => c.id === concertId);
       if (!targetConcert) throw new Error("Konser tidak ditemukan.");
-      
-      // Cari multiplier dari category (bisa dikirim dari frontend atau dihitung di sini)
-      // Untuk sederhananya, kita asumsikan harga sudah termasuk multiplier atau kita biarkan logic frontend yang mengirim total
-      const calculatedTotalPrice = targetConcert.price * quantity;
 
-      // Insert data ke tabel 'bookings' Supabase
-      const { data, error } = await supabase.from('bookings').insert([{
+      if (targetConcert.availableSeats < quantity) {
+        throw new Error("Sisa kursi tidak mencukupi untuk jumlah pesanan ini.");
+      }
+
+      let multiplier = 1;
+      if (category === "VIP") multiplier = 1.5;
+      if (category === "VVIP") multiplier = 2.5;
+
+      const subtotal = targetConcert.price * multiplier * quantity;
+      const calculatedTotalPrice = subtotal + (subtotal * 0.05);
+
+      // Handle booking: Optimistic update untuk responsivitas UI
+      const newAvailableSeats = targetConcert.availableSeats - quantity;
+      const newStatus = newAvailableSeats <= 0 ? "sold_out" : targetConcert.status;
+
+      setConcerts(prev => prev.map(c =>
+        c.id === concertId
+          ? { ...c, availableSeats: newAvailableSeats, status: newStatus }
+          : c
+      ));
+
+      // Push data booking ke tabel 'bookings' Supabase
+      const { data, error: insertError } = await supabase.from('bookings').insert([{
         concert_id: concertId,
         user_id: currentUser.id,
         seat_category: category,
         quantity: quantity,
         total_price: calculatedTotalPrice,
         payment_method: paymentMethod,
-        status: 'pending' // Default selalu pending menunggu pembayaran
+        status: 'pending'
       }]).select();
 
-      if (error) throw error;
+      if (insertError) {
+        // Rollback state konser jika transaksi booking gagal
+        await fetchAllData();
+        throw insertError;
+      }
 
-      // Tarik ulang data agar tiket yang baru dibeli langsung masuk ke UI
-      await fetchAllData();
+      // Update ketersediaan kursi pada tabel 'concerts'-
+      const { error: updateError } = await supabase.from('concerts')
+        .update({
+          available_seats: newAvailableSeats,
+          status: newStatus
+        })
+        .eq('id', concertId);
+
+      if (updateError) {
+        console.error("Supabase RLS memblokir pemotongan kursi:", updateError);
+      }
+
       return { success: true, ticketId: data?.[0]?.id };
+
     } catch (error: any) {
       console.error("Booking error:", error);
       return { success: false, message: error.message };

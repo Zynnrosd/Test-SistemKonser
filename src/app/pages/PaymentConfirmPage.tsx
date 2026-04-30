@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, CreditCard, CheckCircle2, MapPin, Calendar, Ticket, AlertCircle, Building2, Wallet, Clock, ReceiptText, Lock, ShieldCheck, User, ArrowRight, ChevronDown, Check } from "lucide-react";
+import { ArrowLeft, CreditCard, CheckCircle2, MapPin, Calendar, Ticket, AlertCircle, Building2, Wallet, Clock, ReceiptText, Lock, ShieldCheck, User, ArrowRight, ChevronDown, Check, Loader2 } from "lucide-react";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 import { PageTransition } from "../components/PageTransition";
@@ -29,7 +29,7 @@ function InfoBox({ label, value, icon }: { label: string; value: string; icon: R
 export function PaymentConfirmPage() {
   const { ticketId } = useParams<{ ticketId: string }>();
   const navigate = useNavigate();
-  const { getTicket, getConcert, payTicket } = useData();
+  const { getTicket, getConcert, payTicket, loadingData } = useData();
   const { currentUser } = useAuth();
 
   const ticket = getTicket(ticketId!);
@@ -49,7 +49,7 @@ export function PaymentConfirmPage() {
     (ticket?.paymentMethod as PaymentMethod) || "Credit Card"
   );
 
-  // LOGIC: Hitung mundur 24 Jam berdasarkan waktu booking tiket
+  // LOGIC: Menghitung mundur 24 Jam berdasarkan waktu booking tiket
   useEffect(() => {
     if (!ticket) return;
 
@@ -66,12 +66,11 @@ export function PaymentConfirmPage() {
       }
     };
 
-    updateTimer(); // Initial call
+    updateTimer();
     const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
   }, [ticket]);
 
-  // FORMAT: Mengubah detik ke format HH:MM:SS
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -79,7 +78,27 @@ export function PaymentConfirmPage() {
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  if (!ticket || !concert || !currentUser) return null;
+  // Menampilkan Loading Screen saat Blank Page
+  if (loadingData) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
+        <h2 className="text-xl font-black text-slate-900 tracking-tight">Syncing secure data...</h2>
+        <p className="text-sm text-slate-500 font-medium mt-2">Please wait a moment</p>
+      </div>
+    );
+  }
+
+  // Jika data gagal diload
+  if (!ticket || !concert || !currentUser) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <AlertCircle className="w-12 h-12 text-rose-500 mb-4" />
+        <h2 className="text-xl font-black text-slate-900 tracking-tight mb-4">Ticket Not Found</h2>
+        <button onClick={() => navigate(-1)} className="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold">Go Back</button>
+      </div>
+    );
+  }
 
   const handleConfirm = async () => {
     setError("");
@@ -88,6 +107,11 @@ export function PaymentConfirmPage() {
     setLoading(false);
     if (result.success) setConfirmed(true);
     else setError(result.message);
+  };
+
+  // FUNGSI UNTUK PAYLATER
+  const handlePayLater = () => {
+    navigate("/my-tickets");
   };
 
   const currentMethodDetails = PAYMENT_METHODS.find(m => m.id === selectedPayment) || PAYMENT_METHODS[0];
@@ -180,7 +204,7 @@ export function PaymentConfirmPage() {
               <InfoBox icon={<User className="w-4 h-4" />} label="Billed To" value={currentUser.name} />
             </div>
 
-            {/* --- PEMILIHAN METODE PEMBAYARAN INTERAKTIF --- */}
+            {/* PEMILIHAN METODE PEMBAYARAN INTERAKTIF */}
             <div className={`bg-slate-50 border border-slate-100 rounded-[1.5rem] p-1.5 mb-8 shadow-inner flex flex-col transition-all ${isExpired ? "opacity-50 pointer-events-none" : ""}`}>
               <div
                 className="flex items-center justify-between p-3.5 cursor-pointer rounded-xl hover:bg-slate-100 transition-colors"
@@ -259,7 +283,7 @@ export function PaymentConfirmPage() {
               {!isExpired && <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />}
               {loading ? (
                 <span className="flex items-center gap-2 relative z-10">
-                  <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Processing...
+                  <Loader2 className="w-5 h-5 text-white animate-spin" /> Processing...
                 </span>
               ) : isExpired ? (
                 <span className="flex items-center gap-2 relative z-10"><AlertCircle className="w-4 h-4" /> Order Expired</span>
@@ -267,6 +291,18 @@ export function PaymentConfirmPage() {
                 <span className="flex items-center gap-2 relative z-10"><Lock className="w-4 h-4" /> Pay ${ticket.totalPrice.toFixed(2)}</span>
               )}
             </button>
+
+            {/* TOMBOL BAYAR NANTI */}
+            {!isExpired && (
+              <button
+                onClick={handlePayLater}
+                disabled={loading}
+                className="w-full mt-3 py-3.5 bg-slate-50 text-slate-500 hover:text-slate-900 hover:bg-slate-100 font-bold rounded-xl border border-slate-200 transition-all active:scale-95"
+              >
+                Pay Later
+              </button>
+            )}
+
             <p className="text-center text-[9px] text-slate-400 font-bold mt-5 uppercase tracking-widest flex items-center justify-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> Secured by ConcertHub Enterprise</p>
           </div>
         </motion.div>

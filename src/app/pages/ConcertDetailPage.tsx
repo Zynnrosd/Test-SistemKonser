@@ -21,15 +21,12 @@ export function ConcertDetailPage() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 selection:bg-primary/20 overflow-x-hidden flex flex-col">
 
-      {/* 1. COLORFUL AURA BACKGROUND */}
-      {/* PERBAIKAN: Menambahkan CSS Masking untuk menghaluskan potongan kaku di bagian atas */}
+      {/* AURA BACKGROUND */}
       <div
         className="absolute top-0 left-0 w-full h-[100vh] pointer-events-none z-0 overflow-hidden"
         style={{
-          // Masker gradien: Transparan di paling atas (0%), perlahan menjadi pekat (black) di 20% ke bawah.
-          // Ini menjamin transisi super halus dan menghilangkan garis potongan.
           maskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 100%)" // Untuk Safari/WebKit
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 100%)"
         }}
       >
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/10 blur-[120px] rounded-full mix-blend-multiply opacity-70" />
@@ -66,7 +63,7 @@ export function ConcertDetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
 
-          {/* 2. LEFT COL: HERO IMAGE & DETAILS */}
+          {/* LEFT COL: HERO IMAGE & DETAILS */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-6">
 
             {/* Hero Image Container */}
@@ -116,7 +113,7 @@ export function ConcertDetailPage() {
             </motion.div>
           </div>
 
-          {/* 3. RIGHT COL: FLOATING BOOKING CARD */}
+          {/* RIGHT COL: FLOATING BOOKING CARD */}
           <div className="lg:col-span-5 xl:col-span-4 relative">
             <motion.div
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}

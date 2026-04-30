@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 export function ProtectedRoute() {
     const { currentUser, loading } = useAuth();
 
-    // Selama Supabase masih mengecek sesi, tampilkan loading screen
+    // Menampilkan loading screen saat sedang login
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -14,11 +14,11 @@ export function ProtectedRoute() {
         );
     }
 
-    // Jika setelah dicek ternyata TIDAK ADA user yang login, lempar paksa ke halaman Login
+    // Jika tidak ada user, kembali lagi ke halaman login
     if (!currentUser) {
         return <Navigate to="/login" replace />;
     }
 
-    // Jika ada user, silakan lewat ke halaman yang dituju
+    // Jika ada user, lanjut ke halaman yang dituju
     return <Outlet />;
 }

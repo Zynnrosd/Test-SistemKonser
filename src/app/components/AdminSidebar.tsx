@@ -10,7 +10,6 @@ export function AdminSidebar() {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
 
-  // Menghapus entry Logs Database / System Database
   const menuItems = [
     { to: "/admin", label: "Overview", icon: LayoutDashboard },
     { to: "/admin/concerts", label: "Manage Concerts", icon: Music2 },
@@ -44,8 +43,8 @@ export function AdminSidebar() {
               key={item.to}
               to={item.to}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${active
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                 }`}
             >
               <item.icon className={`w-5 h-5 ${active ? "text-white" : "text-slate-400"}`} />
@@ -59,10 +58,10 @@ export function AdminSidebar() {
       <div className="p-4 border-t border-slate-100 bg-slate-50/50">
         <div className="flex items-center gap-3 px-2 mb-4">
           <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">
-            {currentUser?.name.charAt(0).toUpperCase()}
+            {currentUser?.name?.charAt(0).toUpperCase() || "A"}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-slate-900 truncate">{currentUser?.name}</p>
+            <p className="text-sm font-bold text-slate-900 truncate">{currentUser?.name || "Administrator"}</p>
             <p className="text-[10px] font-bold text-primary uppercase flex items-center gap-1">
               <Shield className="w-2.5 h-2.5" /> Administrator
             </p>

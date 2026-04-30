@@ -44,14 +44,14 @@ function CartItem({ ticket, concert }: { ticket: any; concert: any }) {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
       className={`group relative rounded-[1.5rem] overflow-hidden transition-all duration-300 ${countdown.expired
-          ? "bg-rose-50/50 border border-rose-100 opacity-75 grayscale-[50%]"
-          : urgency
-            ? "bg-white/90 backdrop-blur-xl border border-amber-200 shadow-xl shadow-amber-500/10 hover:-translate-y-1"
-            : "bg-white/80 backdrop-blur-xl border border-white shadow-lg shadow-slate-200/40 hover:shadow-xl hover:shadow-slate-300/50 hover:-translate-y-1"
+        ? "bg-rose-50/50 border border-rose-100 opacity-75 grayscale-[50%]"
+        : urgency
+          ? "bg-white/90 backdrop-blur-xl border border-amber-200 shadow-xl shadow-amber-500/10 hover:-translate-y-1"
+          : "bg-white/80 backdrop-blur-xl border border-white shadow-lg shadow-slate-200/40 hover:shadow-xl hover:shadow-slate-300/50 hover:-translate-y-1"
         }`}
     >
       <div className="flex flex-col sm:flex-row pl-1.5">
-        {/* Gambar Thumbnail (Diperkecil & Diberi Margin Dalam) */}
+        {/* Gambar Thumbnail */}
         <div className="w-full sm:w-36 h-36 flex-shrink-0 relative overflow-hidden bg-slate-100 m-3 rounded-xl">
           <img
             src={concert.image}
@@ -72,8 +72,8 @@ function CartItem({ ticket, concert }: { ticket: any; concert: any }) {
 
             {/* Badge Kategori Kursi */}
             <span className={`text-[8px] font-black px-2.5 py-1 rounded-md border uppercase tracking-widest flex-shrink-0 shadow-sm ${ticket.seatCategory === "VVIP" ? "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200" :
-                ticket.seatCategory === "VIP" ? "bg-primary/10 text-primary border-primary/20" :
-                  "bg-slate-50 text-slate-600 border-slate-200"
+              ticket.seatCategory === "VIP" ? "bg-primary/10 text-primary border-primary/20" :
+                "bg-slate-50 text-slate-600 border-slate-200"
               }`}>
               {ticket.seatCategory}
             </span>
@@ -121,10 +121,10 @@ function CartItem({ ticket, concert }: { ticket: any; concert: any }) {
         </div>
       </div>
 
-      {/* Strip Bawah (Informasi Order) */}
+      {/* Strip Bawah - Informasi Order */}
       <div className={`px-6 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] flex items-center justify-between border-t border-dashed ${countdown.expired ? "bg-rose-100/30 border-rose-200 text-rose-500" :
-          urgency ? "bg-amber-50/50 border-amber-200 text-amber-600" :
-            "bg-slate-50/50 border-slate-200 text-slate-400"
+        urgency ? "bg-amber-50/50 border-amber-200 text-amber-600" :
+          "bg-slate-50/50 border-slate-200 text-slate-400"
         }`}>
         <span>ORDER #{ticket.id.toUpperCase()}</span>
         <span className="flex items-center gap-1.5">
@@ -151,7 +151,7 @@ export function CartPage() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 selection:bg-primary/20 overflow-x-hidden flex flex-col">
 
-      {/* 1. BACKGROUND AURA (Konsisten dengan Dashboard & My Tickets) */}
+      {/* BACKGROUND AURA */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/5 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/5 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
@@ -159,7 +159,7 @@ export function CartPage() {
 
       <div className="relative z-10 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 flex-grow">
 
-        {/* Header (Proporsi Dirampingkan) */}
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-1.5">
@@ -207,12 +207,12 @@ export function CartPage() {
                 ))}
               </AnimatePresence>
 
-              {/* Total Section Minimalist & Premium */}
+              {/* Total Section */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                 className="bg-slate-900 rounded-[1.5rem] shadow-xl shadow-slate-900/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden"
               >
-                {/* Latar Belakang Dekoratif untuk Kotak Total */}
+                {/* Latar Belakang untuk Kotak Total */}
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-fuchsia-500/10 pointer-events-none" />
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay pointer-events-none" />
 

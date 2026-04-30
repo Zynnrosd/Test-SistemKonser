@@ -19,12 +19,10 @@ import { PaymentConfirmPage } from "./pages/PaymentConfirmPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { useAuth } from "./context/AuthContext";
 
-// ─── Layout wrappers ───────────────────────────────────────────────
-
+// Layout wrappers
 function UserLayout() {
-  const { currentUser, loading } = useAuth(); // 1. Tambahkan loading di sini
+  const { currentUser, loading } = useAuth();
 
-  // 2. Tahan di sini selama Supabase masih loading
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -33,14 +31,13 @@ function UserLayout() {
     );
   }
 
-  // 3. Pengecekan aman dilakukan setelah loading selesai
   if (!currentUser) return <Navigate to="/login" replace />;
   if (currentUser.role === "admin") return <Navigate to="/admin" replace />;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar />
-      {/* flex-1 memastikan main mengambil sisa ruang agar footer tetap di bawah */}
+
       <main className="flex-1 pt-20">
         <Outlet />
       </main>
@@ -50,9 +47,8 @@ function UserLayout() {
 }
 
 function AdminLayout() {
-  const { currentUser, loading } = useAuth(); // 1. Tambahkan loading di sini
+  const { currentUser, loading } = useAuth();
 
-  // 2. Tahan di sini selama Supabase masih loading
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -61,7 +57,6 @@ function AdminLayout() {
     );
   }
 
-  // 3. Pengecekan aman dilakukan setelah loading selesai
   if (!currentUser) return <Navigate to="/login" replace />;
   if (currentUser.role !== "admin") return <Navigate to="/dashboard" replace />;
 
@@ -77,7 +72,7 @@ function AdminLayout() {
   );
 }
 
-// ─── Router ────────────────────────────────────────────────────────
+// Router
 
 export const router = createBrowserRouter([
   {
@@ -109,14 +104,12 @@ export const router = createBrowserRouter([
   },
   {
     // Layout untuk Admin
-    path: "/admin", // Letakkan path utama di sini
+    path: "/admin",
     element: <AdminLayout />,
     children: [
-      { index: true, Component: AdminDashboard }, // Menjadi "/admin"
-      { path: "concerts", Component: AdminConcertsPage }, // Menjadi "/admin/concerts"
-      { path: "transactions", Component: AdminTransactionsPage }, // Menjadi "/admin/transactions"
-
-      // Catatan: Rute "data-table" dan "profile" admin SUDAH DIHAPUS di sini
+      { index: true, Component: AdminDashboard },
+      { path: "concerts", Component: AdminConcertsPage },
+      { path: "transactions", Component: AdminTransactionsPage },
     ],
   },
   {

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext"; // Diperbaiki: ../ bukan ../../
+import { useAuth } from "../context/AuthContext";
 import { User, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
-import { PageTransition } from "../components/PageTransition"; // Diperbaiki: ../ bukan ../../
+import { PageTransition } from "../components/PageTransition";
 
 export function RegisterPage() {
   const { register } = useAuth();

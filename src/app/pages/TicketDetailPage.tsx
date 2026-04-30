@@ -72,7 +72,7 @@ export function TicketDetailPage() {
   return (
     <PageTransition className="relative min-h-screen bg-slate-50 selection:bg-primary/20 overflow-x-hidden flex flex-col">
 
-      {/* 1. COLORFUL AURA BACKGROUND */}
+      {/* AURA BACKGROUND */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-fuchsia-500/10 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-cyan-400/10 blur-[140px] rounded-full mix-blend-multiply opacity-50" />
@@ -96,15 +96,15 @@ export function TicketDetailPage() {
           </button>
         </div>
 
-        {/* --- MAIN TICKET CARD --- */}
+        {/* MAIN TICKET CARD */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="bg-white/90 backdrop-blur-3xl rounded-[2rem] border border-white shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col relative"
         >
-          {/* Latar Belakang Holografik Tipis di dalam Tiket */}
+          {/* Latar Belakang Holografik */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/10 pointer-events-none" />
 
-          {/* Concert Image Header (Lebih Ramping) */}
+          {/* Concert Image Header */}
           <div className="relative h-48 sm:h-56 w-full shrink-0">
             <img src={concert.image} alt={concert.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent" />
@@ -146,7 +146,7 @@ export function TicketDetailPage() {
               </div>
             </div>
 
-            {/* Grid Informasi (Event & Booking Digabung agar lebih compact) */}
+            {/* Grid Informasi */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
 
               {/* Event Info */}
@@ -196,9 +196,9 @@ export function TicketDetailPage() {
 
           </div>
 
-          {/* --- TICKET STUB FOOTER (Potongan Tiket Bawah) --- */}
+          {/* TICKET STUB FOOTER */}
           <div className="relative border-t-2 border-dashed border-slate-200 px-6 sm:px-8 py-5 bg-slate-50/80 flex items-center justify-between font-black uppercase tracking-widest">
-            {/* Lubang Kiri Kanan */}
+
             <div className="absolute -left-3 top-0 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-50 border-b border-r border-slate-200 shadow-inner" />
             <div className="absolute -right-3 top-0 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-50 border-b border-l border-slate-200 shadow-inner" />
 
@@ -207,14 +207,14 @@ export function TicketDetailPage() {
               <span className="text-[9px]">PAID VIA {ticket.paymentMethod}</span>
             </div>
 
-            {/* Barcode Mockup (Dekorasi) */}
+            {/* Barcode Mockup */}
             <div className="flex gap-0.5 opacity-30 mix-blend-multiply">
               <div className="w-1 h-6 bg-slate-900"></div><div className="w-0.5 h-6 bg-slate-900"></div><div className="w-1.5 h-6 bg-slate-900"></div><div className="w-1 h-6 bg-slate-900"></div><div className="w-0.5 h-6 bg-slate-900"></div><div className="w-2 h-6 bg-slate-900"></div><div className="w-1 h-6 bg-slate-900"></div><div className="w-1.5 h-6 bg-slate-900"></div>
             </div>
           </div>
         </motion.div>
 
-        {/* --- BOTTOM ACTIONS --- */}
+        {/* BOTTOM ACTIONS */}
         <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <Link
             to="/my-tickets"
@@ -237,12 +237,11 @@ export function TicketDetailPage() {
   );
 }
 
-// Komponen InfoRow yang Diperkecil agar lebih Rapi
+// Komponen InfoRow
 function InfoRow({ icon, label, value, mono = false }: { icon: ReactNode; label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-slate-400 bg-slate-100 rounded-md">
-        {/* Render ulang icon dengan ukuran lebih kecil */}
         <div className="scale-75">{icon}</div>
       </div>
       <div className="flex flex-col min-w-0 flex-1">
